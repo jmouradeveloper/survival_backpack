@@ -1,0 +1,39 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: survival_backpack_web
+    ports:
+      - "3000:3000"
+    volumes:
+      # Montar código fonte para hot reload
+      - .:/rails
+      # Volume para gems (evitar reinstalar a cada restart)
+      - bundle_data:/usr/local/bundle
+      # Volume para node_modules (se necessário)
+      - node_modules:/rails/node_modules
+      # Volumes para dados persistentes
+      - ./storage:/rails/storage
+      - ./log:/rails/log
+      - ./tmp:/rails/tmp
+    environment:
+      - RAILS_ENV=development
+      - RAILS_MAX_THREADS=5
+      - DATABASE_URL=sqlite3:storage/development.sqlite3
+    stdin_open: true
+    tty: true
+    command: bin/rails server -b 0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  bundle_data:
+    driver: local
+  node_modules:
+    driver: local
+
