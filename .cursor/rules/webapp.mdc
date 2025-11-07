@@ -1,0 +1,10 @@
+---
+decription: Conformidade com boas práticas de desenvolvimento de Web Apps
+alwaysApply: true
+---
+
+- A aplicação deve utilizar Hotwire como framework frontend
+- Cada alteração deve levar em consideração que este aplicativo é um web application
+- As funcionalidades devem também funcionar em ambiente sem rede de internet
+- Sempre testar as funcionalidades na versão online e offline
+- Deve sempre ser utilizado as convenções e padrões atuais do framework Hotwire

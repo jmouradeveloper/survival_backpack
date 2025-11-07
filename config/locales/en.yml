@@ -29,3 +29,8 @@
 
 en:
   hello: "Hello world"
+  food_item:
+    status:
+      valid: "Valid"
+      expiring_soon: "Expiring Soon"
+      expired: "Expired"

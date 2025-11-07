@@ -1,0 +1,95 @@
+<%= form_with model: food_item, data: { turbo: true } do |f| %>
+  <% if food_item.errors.any? %>
+    <div class="error-messages">
+      <h4><%= pluralize(food_item.errors.count, "erro") %> encontrado:</h4>
+      <ul>
+        <% food_item.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :name, "Nome *" %>
+    <%= f.text_field :name, 
+        class: "form-input",
+        placeholder: "Ex: Arroz integral",
+        required: true,
+        autofocus: true %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :category, "Categoria *" %>
+    <%= f.text_field :category, 
+        class: "form-input",
+        placeholder: "Ex: Grãos",
+        list: "categories",
+        required: true %>
+    <datalist id="categories">
+      <option value="Grãos">
+      <option value="Enlatados">
+      <option value="Conservas">
+      <option value="Desidratados">
+      <option value="Bebidas">
+      <option value="Laticínios">
+      <option value="Proteínas">
+      <option value="Frutas">
+      <option value="Vegetais">
+      <option value="Outros">
+    </datalist>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :quantity, "Quantidade *" %>
+      <%= f.number_field :quantity, 
+          class: "form-input",
+          step: "0.01",
+          min: "0",
+          placeholder: "Ex: 2.5",
+          required: true %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :expiration_date, "Data de Validade" %>
+      <%= f.text_field :expiration_date, 
+          value: (f.object.expiration_date.strftime("%d/%m/%Y") if f.object.expiration_date.present?),
+          class: "form-input datepicker",
+          placeholder: "DD/MM/AAAA",
+          readonly: true,
+          data: { controller: "flatpickr" } %>
+      <small class="form-hint">Clique para selecionar a data</small>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :storage_location, "Local de Armazenamento" %>
+    <%= f.text_field :storage_location, 
+        class: "form-input",
+        placeholder: "Ex: Despensa, Geladeira, Freezer",
+        list: "storage_locations" %>
+    <datalist id="storage_locations">
+      <option value="Despensa">
+      <option value="Geladeira">
+      <option value="Freezer">
+      <option value="Armário">
+      <option value="Porão">
+    </datalist>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :notes, "Observações" %>
+    <%= f.text_area :notes, 
+        class: "form-textarea",
+        placeholder: "Informações adicionais...",
+        rows: 3 %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit food_item.new_record? ? "Cadastrar" : "Atualizar", 
+        class: "btn btn-primary" %>
+    <%= link_to "Cancelar", food_items_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>
+

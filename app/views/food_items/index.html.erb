@@ -1,0 +1,70 @@
+<div class="food-items-page">
+  <div class="page-header">
+    <h2>Gerenciamento de Alimentos</h2>
+    <%= link_to "➕ Novo Alimento", new_food_item_path, 
+        class: "btn btn-primary",
+        data: { turbo_frame: "modal" } %>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-section" data-controller="filters">
+    <%= form_with url: food_items_path, method: :get, data: { turbo_frame: "food_items_list", turbo_action: "advance" } do |f| %>
+      <div class="filters-grid">
+        <div class="filter-group">
+          <%= f.label :filter, "Status" %>
+          <%= f.select :filter, 
+              options_for_select([
+                ["Todos", ""],
+                ["Válidos", "valid"],
+                ["Vencendo em breve", "expiring_soon"],
+                ["Vencidos", "expired"]
+              ], params[:filter]), 
+              {}, 
+              class: "form-select",
+              data: { action: "change->filters#submit" } %>
+        </div>
+
+        <div class="filter-group">
+          <%= f.label :category, "Categoria" %>
+          <%= f.text_field :category, 
+              value: params[:category],
+              placeholder: "Filtrar por categoria",
+              class: "form-input" %>
+        </div>
+
+        <div class="filter-group">
+          <%= f.label :storage_location, "Local de Armazenamento" %>
+          <%= f.text_field :storage_location, 
+              value: params[:storage_location],
+              placeholder: "Filtrar por local",
+              class: "form-input" %>
+        </div>
+
+        <div class="filter-actions">
+          <%= f.submit "Filtrar", class: "btn btn-secondary" %>
+          <%= link_to "Limpar", food_items_path, class: "btn btn-link" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Lista de Alimentos -->
+  <%= turbo_frame_tag "food_items_list" do %>
+    <div class="food-items-grid">
+      <%= render @food_items %>
+      
+      <% if @food_items.empty? %>
+        <div class="empty-state">
+          <p>Nenhum alimento cadastrado ainda.</p>
+          <%= link_to "Cadastrar primeiro alimento", new_food_item_path, 
+              class: "btn btn-primary",
+              data: { turbo_frame: "modal" } %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<!-- Modal para formulários -->
+<%= turbo_frame_tag "modal", target: "_top" %>
+

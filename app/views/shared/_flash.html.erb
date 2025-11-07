@@ -1,0 +1,12 @@
+<% if flash[:notice] %>
+  <div class="alert alert-success" data-controller="auto-dismiss">
+    <%= flash[:notice] %>
+  </div>
+<% end %>
+
+<% if flash[:alert] %>
+  <div class="alert alert-error" data-controller="auto-dismiss">
+    <%= flash[:alert] %>
+  </div>
+<% end %>
+

@@ -1,0 +1,63 @@
+<%= turbo_frame_tag dom_id(food_item) do %>
+  <div class="food-item-card <%= "status-#{food_item.status}" %>" 
+       data-controller="food-item">
+    <div class="card-header">
+      <h3><%= food_item.name %></h3>
+      <span class="badge badge-<%= food_item.status %>">
+        <%= t("food_item.status.#{food_item.status}") %>
+      </span>
+    </div>
+
+    <div class="card-body">
+      <div class="info-row">
+        <span class="label">Categoria:</span>
+        <span class="value"><%= food_item.category %></span>
+      </div>
+
+      <div class="info-row">
+        <span class="label">Quantidade:</span>
+        <span class="value"><%= number_with_precision(food_item.quantity, precision: 2) %></span>
+      </div>
+
+      <% if food_item.expiration_date %>
+        <div class="info-row">
+          <span class="label">Validade:</span>
+          <span class="value">
+            <%= l(food_item.expiration_date, format: :short) %>
+            <% if food_item.days_until_expiration %>
+              (<%= food_item.days_until_expiration %> dias)
+            <% end %>
+          </span>
+        </div>
+      <% end %>
+
+      <% if food_item.storage_location.present? %>
+        <div class="info-row">
+          <span class="label">Local:</span>
+          <span class="value"><%= food_item.storage_location %></span>
+        </div>
+      <% end %>
+
+      <% if food_item.notes.present? %>
+        <div class="info-row">
+          <span class="label">Obs:</span>
+          <span class="value"><%= truncate(food_item.notes, length: 100) %></span>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="card-actions">
+      <%= link_to "✏️ Editar", edit_food_item_path(food_item), 
+          class: "btn btn-sm btn-secondary",
+          data: { turbo_frame: "modal" } %>
+      <%= button_to "🗑️ Remover", food_item_path(food_item), 
+          method: :delete,
+          class: "btn btn-sm btn-danger",
+          data: { 
+            turbo_confirm: "Tem certeza que deseja remover este item?",
+            turbo_method: :delete
+          } %>
+    </div>
+  </div>
+<% end %>
+

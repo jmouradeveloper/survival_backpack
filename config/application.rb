@@ -23,5 +23,12 @@ module SurvivalBackpack
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Configuração de locale padrão para pt-BR
+    config.i18n.default_locale = :"pt-BR"
+    config.i18n.available_locales = [:"pt-BR", :en]
+    
+    # Configuração de timezone para Brasília
+    config.time_zone = "America/Sao_Paulo"
   end
 end

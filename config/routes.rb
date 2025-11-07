@@ -6,9 +6,23 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+
+  # Rotas Web - Gerenciamento de Alimentos
+  resources :food_items
+
+  # API Routes
+  namespace :api do
+    namespace :v1 do
+      resources :food_items do
+        collection do
+          get :statistics
+        end
+      end
+    end
+  end
 
   # Defines the root path route ("/")
-  # root "posts#index"
+  root "food_items#index"
 end

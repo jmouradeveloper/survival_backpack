@@ -1,0 +1,6 @@
+---
+description: Disponibilizar endpoints via API
+alwaysApply: true
+---
+
+- Todas as funcionalidades e rotinas desse MVC devem ser criadas de forma desacoplada para que possam ser disponibilizadas e utilizadas em forma de API

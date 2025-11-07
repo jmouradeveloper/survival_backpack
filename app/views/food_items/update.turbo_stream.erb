@@ -1,0 +1,4 @@
+<%= turbo_stream.replace dom_id(@food_item), partial: "food_items/food_item", locals: { food_item: @food_item } %>
+<%= turbo_stream.update "modal", "" %>
+<%= turbo_stream.update "flash", partial: "shared/flash" %>
+

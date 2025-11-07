@@ -1,28 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
   <head>
-    <title><%= content_for(:title) || "Survival Backpack" %></title>
+    <title>Survival Backpack - Gerenciamento de Estoque</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="turbo-cache-control" content="no-cache">
+    <meta charset="UTF-8">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
     <%= javascript_importmap_tags %>
+    
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker').then(registration => {
+          console.log('Service Worker registrado com sucesso:', registration);
+        }).catch(error => {
+          console.log('Falha ao registrar Service Worker:', error);
+        });
+      }
+    </script>
   </head>
 
   <body>
-    <%= yield %>
+    <header class="main-header">
+      <div class="container">
+        <h1>🎒 Survival Backpack</h1>
+        <nav>
+          <%= link_to "Alimentos", food_items_path, class: "nav-link" %>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <% if flash[:notice] %>
+        <div class="alert alert-success" data-controller="auto-dismiss">
+          <%= flash[:notice] %>
+        </div>
+      <% end %>
+
+      <% if flash[:alert] %>
+        <div class="alert alert-error" data-controller="auto-dismiss">
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+
+    <footer class="main-footer">
+      <div class="container">
+        <p>&copy; 2025 Survival Backpack - Sistema de Gerenciamento de Estoque</p>
+      </div>
+    </footer>
   </body>
 </html>

@@ -1,0 +1,15 @@
+<%= turbo_frame_tag "modal" do %>
+  <div class="modal-overlay" data-controller="modal" data-action="click->modal#close">
+    <div class="modal-content" data-action="click->modal#stopPropagation">
+      <div class="modal-header">
+        <h3>Editar Alimento</h3>
+        <%= link_to "✕", food_items_path, class: "modal-close" %>
+      </div>
+
+      <div class="modal-body">
+        <%= render "form", food_item: @food_item %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
