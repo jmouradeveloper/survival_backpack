@@ -1,4 +1,7 @@
 class FoodItem < ApplicationRecord
+  # Associações
+  has_many :notifications, dependent: :destroy
+
   # Validações
   validates :name, presence: true, length: { minimum: 2, maximum: 255 }
   validates :category, presence: true

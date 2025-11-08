@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="turbo-cache-control" content="no-cache">
     <meta charset="UTF-8">
+    <meta name="vapid-public-key" content="BGPQxnL5eWKvTY7_aa1CsEsxdulj9c3MrQowgzkwBiNFHch-KQ9VGzZy9J_2C7aau3nc7vYjdprAM8ymzzfzaAU">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -33,12 +34,17 @@
     </script>
   </head>
 
-  <body>
+  <body data-controller="notifications">
     <header class="main-header">
       <div class="container">
         <h1>🎒 Survival Backpack</h1>
         <nav>
           <%= link_to "Alimentos", food_items_path, class: "nav-link" %>
+          <%= link_to notifications_path, class: "nav-link notifications-link" do %>
+            <span>🔔 Notificações</span>
+            <span class="notification-badge hidden" data-notifications-target="badge">0</span>
+          <% end %>
+          <%= link_to "⚙️ Configurações", notification_preferences_path, class: "nav-link" %>
         </nav>
       </div>
     </header>

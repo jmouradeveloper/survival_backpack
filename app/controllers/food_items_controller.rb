@@ -5,6 +5,12 @@ class FoodItemsController < ApplicationController
   def index
     @food_items = FoodItem.recent
     
+    # Buscar categorias únicas para o filtro
+    @categories = FoodItem.distinct.pluck(:category).compact.sort
+    
+    # Buscar locais únicos para o filtro
+    @storage_locations = FoodItem.distinct.pluck(:storage_location).compact.reject(&:blank?).sort
+    
     # Filtros opcionais
     @food_items = @food_items.by_category(params[:category]) if params[:category].present?
     @food_items = @food_items.by_storage_location(params[:storage_location]) if params[:storage_location].present?

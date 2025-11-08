@@ -1,0 +1,9 @@
+<div class="notification-preferences-edit" data-controller="notifications">
+  <div class="page-header">
+    <h2>✏️ Editar Configurações</h2>
+    <%= link_to "← Voltar", notification_preferences_path, class: "btn btn-link" %>
+  </div>
+
+  <%= render 'form', preference: @preference %>
+</div>
+

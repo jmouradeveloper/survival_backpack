@@ -1,0 +1,121 @@
+<div class="notifications-page" data-controller="notifications">
+  <div class="page-header">
+    <h2>📬 Notificações</h2>
+    
+    <div class="notification-actions">
+      <% if @unread_count > 0 %>
+        <%= button_to "Marcar todas como lidas", 
+            mark_all_as_read_notifications_path, 
+            method: :post,
+            class: "btn btn-secondary",
+            data: { action: "notifications#markAllAsRead" } %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Solicitação de permissão de notificações -->
+  <div class="notification-permission hidden" data-notifications-target="permission">
+    <div class="alert alert-info">
+      <p>
+        <strong>🔔 Ative as notificações</strong>
+        <br>
+        Receba alertas sobre a validade dos seus alimentos, mesmo quando o app estiver fechado.
+      </p>
+      <%= button_tag "Ativar Notificações", 
+          class: "btn btn-primary",
+          data: { action: "notifications#requestPermission" } %>
+    </div>
+  </div>
+
+  <!-- Contador de não lidas -->
+  <% if @unread_count > 0 %>
+    <div class="notifications-summary">
+      <p class="unread-count">
+        Você tem <strong><%= @unread_count %></strong> notificação(ões) não lida(s)
+      </p>
+    </div>
+  <% end %>
+
+  <!-- Lista de notificações -->
+  <%= turbo_frame_tag "notifications_list", data: { notifications_target: "list" } do %>
+    <div class="notifications-list">
+      <% if @notifications.any? %>
+        <%= render @notifications %>
+      <% else %>
+        <div class="empty-state">
+          <p>📭 Nenhuma notificação ainda</p>
+          <p class="text-muted">Você será notificado quando seus alimentos estiverem próximos da validade.</p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.notifications-page {
+  padding: 1.5rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.notification-permission {
+  margin-bottom: 1.5rem;
+}
+
+.notification-permission.hidden {
+  display: none;
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.alert-info {
+  background-color: #e3f2fd;
+  border: 1px solid #2196f3;
+  color: #1565c0;
+}
+
+.notifications-summary {
+  background-color: #fff3e0;
+  border: 1px solid #ff9800;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.notifications-summary .unread-count {
+  margin: 0;
+  color: #e65100;
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #666;
+}
+
+.empty-state p:first-child {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.text-muted {
+  color: #999;
+  font-size: 0.9rem;
+}
+</style>
+

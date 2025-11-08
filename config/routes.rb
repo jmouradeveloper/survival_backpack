@@ -12,6 +12,24 @@ Rails.application.routes.draw do
   # Rotas Web - Gerenciamento de Alimentos
   resources :food_items
 
+  # Rotas Web - Notificações
+  resources :notifications, only: [:index, :show, :destroy] do
+    member do
+      post :mark_as_read
+    end
+    collection do
+      post :mark_all_as_read
+      get :unread_count
+    end
+  end
+
+  # Rotas Web - Preferências de Notificação
+  resource :notification_preferences, only: [:show, :edit, :update] do
+    post :subscribe_push
+    delete :unsubscribe_push
+    post :test_notification
+  end
+
   # API Routes
   namespace :api do
     namespace :v1 do
@@ -19,6 +37,21 @@ Rails.application.routes.draw do
         collection do
           get :statistics
         end
+      end
+
+      resources :notifications, only: [:index, :show, :destroy] do
+        member do
+          post :mark_as_read
+        end
+        collection do
+          post :mark_all_as_read
+          get :unread_count
+        end
+      end
+
+      resource :notification_preferences, only: [:show, :update] do
+        post :subscribe_push
+        delete :unsubscribe_push
       end
     end
   end
