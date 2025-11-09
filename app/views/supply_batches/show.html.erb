@@ -1,0 +1,186 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <%= link_to "← Voltar aos Lotes", supply_batches_path, 
+                class: "text-blue-600 hover:text-blue-800" %>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <div class="flex justify-between items-start mb-6">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">
+          Lote: <%= @supply_batch.batch_code.presence || "Sem código" %>
+        </h1>
+        <p class="text-xl text-gray-600">
+          Alimento: <%= link_to @supply_batch.food_item.name, 
+                                food_item_path(@supply_batch.food_item),
+                                class: "text-blue-600 hover:text-blue-800" %>
+        </p>
+      </div>
+      
+      <span class="px-4 py-2 rounded-full text-sm font-semibold
+                   <%= case @supply_batch.status
+                       when 'active'
+                         @supply_batch.expired? ? 'bg-red-100 text-red-800' : 
+                         @supply_batch.expiring_soon? ? 'bg-yellow-100 text-yellow-800' : 
+                         'bg-green-100 text-green-800'
+                       when 'depleted'
+                         'bg-gray-100 text-gray-800'
+                       when 'expired'
+                         'bg-red-100 text-red-800'
+                       end %>">
+        <%= @supply_batch.status.humanize %>
+      </span>
+    </div>
+
+    <!-- Estatísticas Principais -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+      <div class="text-center p-4 bg-blue-50 rounded-lg">
+        <p class="text-sm text-gray-600 mb-1">Quantidade Inicial</p>
+        <p class="text-2xl font-bold text-blue-600">
+          <%= number_with_precision(@supply_batch.initial_quantity, precision: 2) %>
+        </p>
+      </div>
+      
+      <div class="text-center p-4 bg-green-50 rounded-lg">
+        <p class="text-sm text-gray-600 mb-1">Quantidade Atual</p>
+        <p class="text-2xl font-bold text-green-600">
+          <%= number_with_precision(@supply_batch.current_quantity, precision: 2) %>
+        </p>
+      </div>
+      
+      <div class="text-center p-4 bg-purple-50 rounded-lg">
+        <p class="text-sm text-gray-600 mb-1">Consumido</p>
+        <p class="text-2xl font-bold text-purple-600">
+          <%= number_with_precision(@supply_batch.consumed_quantity, precision: 2) %>
+        </p>
+        <p class="text-xs text-gray-500">(<%= @supply_batch.consumption_percentage %>%)</p>
+      </div>
+      
+      <div class="text-center p-4 bg-orange-50 rounded-lg">
+        <p class="text-sm text-gray-600 mb-1">Prioridade FIFO</p>
+        <p class="text-2xl font-bold text-orange-600">
+          <%= @supply_batch.priority_score %>
+        </p>
+      </div>
+    </div>
+
+    <!-- Barra de Progresso -->
+    <div class="mb-6">
+      <p class="text-sm font-medium text-gray-700 mb-2">Progresso de Consumo</p>
+      <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
+        <div class="h-full <%= @supply_batch.consumption_percentage < 50 ? 'bg-green-500' : @supply_batch.consumption_percentage < 80 ? 'bg-yellow-500' : 'bg-red-500' %>"
+             style="width: <%= @supply_batch.consumption_percentage %>%"></div>
+      </div>
+      <p class="text-xs text-gray-500 mt-1 text-right">
+        <%= @supply_batch.consumption_percentage %>% consumido
+      </p>
+    </div>
+
+    <!-- Informações Detalhadas -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm font-medium text-gray-600">📅 Data de Entrada</p>
+          <p class="text-lg font-semibold"><%= l(@supply_batch.entry_date, format: :long) %></p>
+        </div>
+        
+        <div>
+          <p class="text-sm font-medium text-gray-600">⏰ Data de Validade</p>
+          <p class="text-lg font-semibold <%= @supply_batch.expired? ? 'text-red-600' : @supply_batch.expiring_soon? ? 'text-yellow-600' : '' %>">
+            <%= @supply_batch.expiration_date ? l(@supply_batch.expiration_date, format: :long) : "Sem validade" %>
+            <% if @supply_batch.days_until_expiration %>
+              <span class="text-sm">
+                (<%= @supply_batch.days_until_expiration %> dias)
+              </span>
+            <% end %>
+          </p>
+        </div>
+      </div>
+      
+      <div class="space-y-3">
+        <% if @supply_batch.supplier.present? %>
+          <div>
+            <p class="text-sm font-medium text-gray-600">🏪 Fornecedor</p>
+            <p class="text-lg font-semibold"><%= @supply_batch.supplier %></p>
+          </div>
+        <% end %>
+        
+        <% if @supply_batch.unit_cost.present? %>
+          <div>
+            <p class="text-sm font-medium text-gray-600">💰 Custo Unitário</p>
+            <p class="text-lg font-semibold">R$ <%= number_with_precision(@supply_batch.unit_cost, precision: 2) %></p>
+            <p class="text-sm text-gray-500">
+              Custo Total: R$ <%= number_with_precision(@supply_batch.unit_cost * @supply_batch.initial_quantity, precision: 2) %>
+            </p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @supply_batch.notes.present? %>
+      <div class="mb-6">
+        <p class="text-sm font-medium text-gray-600 mb-2">📝 Observações</p>
+        <p class="text-gray-700 bg-gray-50 p-3 rounded"><%= @supply_batch.notes %></p>
+      </div>
+    <% end %>
+
+    <!-- Ações -->
+    <div class="flex gap-3">
+      <% if @supply_batch.available? %>
+        <%= link_to "Registrar Consumo", new_supply_rotation_path(supply_batch_id: @supply_batch.id),
+                    data: { turbo_frame: "modal" },
+                    class: "flex-1 text-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded transition" %>
+      <% end %>
+      
+      <%= link_to "Editar Lote", edit_supply_batch_path(@supply_batch),
+                  data: { turbo_frame: "modal" },
+                  class: "flex-1 text-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded transition" %>
+    </div>
+  </div>
+
+  <!-- Histórico de Rotações -->
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Histórico de Rotações</h2>
+    
+    <% if @rotations.any? %>
+      <div class="space-y-3">
+        <% @rotations.each do |rotation| %>
+          <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition">
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <p class="font-semibold text-gray-800">
+                  <%= rotation.rotation_type.humanize %>
+                  <span class="text-blue-600">
+                    - <%= number_with_precision(rotation.quantity, precision: 2) %>
+                  </span>
+                </p>
+                <p class="text-sm text-gray-600">
+                  <%= l(rotation.rotation_date, format: :long) %>
+                </p>
+                <% if rotation.reason.present? %>
+                  <p class="text-sm text-gray-500 mt-1">
+                    Motivo: <%= rotation.reason %>
+                  </p>
+                <% end %>
+              </div>
+              
+              <%= link_to "Ver Detalhes", supply_rotation_path(rotation),
+                          class: "text-blue-600 hover:text-blue-800 text-sm" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      
+      <%= link_to "Ver Todas as Rotações", supply_rotations_path(supply_batch_id: @supply_batch.id),
+                  class: "mt-4 inline-block text-blue-600 hover:text-blue-800" %>
+    <% else %>
+      <p class="text-gray-500 text-center py-8">
+        Nenhuma rotação registrada para este lote ainda.
+      </p>
+    <% end %>
+  </div>
+</div>
+
+<!-- Modal para formulários -->
+<%= turbo_frame_tag "modal" %>
+

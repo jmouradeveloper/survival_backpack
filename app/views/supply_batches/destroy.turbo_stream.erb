@@ -1,0 +1,6 @@
+<%= turbo_stream.remove dom_id(@supply_batch) %>
+
+<%= turbo_stream.replace "flash" do %>
+  <%= render "shared/flash" %>
+<% end %>
+

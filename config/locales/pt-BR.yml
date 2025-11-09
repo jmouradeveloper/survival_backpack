@@ -129,6 +129,39 @@ pt-BR:
               too_long: "é muito longo (máximo: 255 caracteres)"
             notes:
               too_long: "é muito longo (máximo: 5000 caracteres)"
+        supply_batch:
+          attributes:
+            food_item_id:
+              blank: "deve ser selecionado"
+            initial_quantity:
+              blank: "não pode ficar em branco"
+              greater_than: "deve ser maior que 0"
+            current_quantity:
+              blank: "não pode ficar em branco"
+              greater_than_or_equal_to: "deve ser maior ou igual a 0"
+            entry_date:
+              blank: "não pode ficar em branco"
+            expiration_date:
+              after_entry_date: "deve ser posterior à data de entrada"
+            batch_code:
+              too_long: "é muito longo (máximo: 255 caracteres)"
+            supplier:
+              too_long: "é muito longo (máximo: 255 caracteres)"
+            notes:
+              too_long: "é muito longo (máximo: 5000 caracteres)"
+        supply_rotation:
+          attributes:
+            supply_batch_id:
+              blank: "deve ser selecionado"
+            food_item_id:
+              blank: "deve ser selecionado"
+            quantity:
+              blank: "não pode ficar em branco"
+              greater_than: "deve ser maior que 0"
+            rotation_date:
+              blank: "não pode ficar em branco"
+            rotation_type:
+              blank: "não pode ficar em branco"
     attributes:
       food_item:
         name: "Nome"
@@ -139,10 +172,42 @@ pt-BR:
         notes: "Observações"
         created_at: "Criado em"
         updated_at: "Atualizado em"
+      supply_batch:
+        food_item: "Alimento"
+        food_item_id: "Alimento"
+        initial_quantity: "Quantidade Inicial"
+        current_quantity: "Quantidade Atual"
+        entry_date: "Data de Entrada"
+        expiration_date: "Data de Validade"
+        batch_code: "Código do Lote"
+        supplier: "Fornecedor"
+        unit_cost: "Custo Unitário"
+        notes: "Observações"
+        status: "Status"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      supply_rotation:
+        supply_batch: "Lote"
+        supply_batch_id: "Lote"
+        food_item: "Alimento"
+        food_item_id: "Alimento"
+        quantity: "Quantidade"
+        rotation_date: "Data da Rotação"
+        rotation_type: "Tipo de Rotação"
+        reason: "Motivo"
+        notes: "Observações"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
     models:
       food_item:
         one: "Alimento"
         other: "Alimentos"
+      supply_batch:
+        one: "Lote"
+        other: "Lotes"
+      supply_rotation:
+        one: "Rotação"
+        other: "Rotações"
   
   # Traduções de erros gerais
   errors:
@@ -163,4 +228,18 @@ pt-BR:
       valid: "Válido"
       expiring_soon: "Vencendo em breve"
       expired: "Vencido"
+  
+  supply_batch:
+    status:
+      active: "Ativo"
+      depleted: "Esgotado"
+      expired: "Vencido"
+  
+  supply_rotation:
+    rotation_type:
+      consumption: "Consumo"
+      waste: "Descarte/Perda"
+      donation: "Doação"
+      transfer: "Transferência"
+
 

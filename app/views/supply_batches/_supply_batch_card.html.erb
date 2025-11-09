@@ -1,0 +1,160 @@
+<%= turbo_frame_tag dom_id(batch) do %>
+  <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition" 
+       data-controller="supply-batch">
+    <div class="flex justify-between items-start mb-4">
+      <div class="flex-1">
+        <h3 class="text-xl font-bold text-gray-800 mb-1">
+          <%= link_to batch.food_item.name, food_item_path(batch.food_item), 
+                      class: "hover:text-blue-600 transition" %>
+        </h3>
+        <p class="text-sm text-gray-600">
+          <span class="font-semibold">Lote:</span> 
+          <%= batch.batch_code.presence || "Sem código" %>
+        </p>
+      </div>
+      
+      <!-- Status Badge -->
+      <span class="px-3 py-1 rounded-full text-xs font-semibold
+                   <%= case batch.status
+                       when 'active'
+                         if batch.expired?
+                           'bg-red-100 text-red-800'
+                         elsif batch.expiring_soon?
+                           'bg-yellow-100 text-yellow-800'
+                         else
+                           'bg-green-100 text-green-800'
+                         end
+                       when 'depleted'
+                         'bg-gray-100 text-gray-800'
+                       when 'expired'
+                         'bg-red-100 text-red-800'
+                       end %>">
+        <%= case batch.status
+            when 'active'
+              if batch.expired?
+                '🔴 Vencido'
+              elsif batch.expiring_soon?
+                '⚠️ Vencendo'
+              else
+                '✅ Ativo'
+              end
+            when 'depleted'
+              '📭 Esgotado'
+            when 'expired'
+              '🔴 Vencido'
+            end %>
+      </span>
+    </div>
+
+    <!-- Informações do Lote -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+      <div>
+        <p class="text-xs text-gray-500">Quantidade Inicial</p>
+        <p class="text-lg font-semibold text-gray-800">
+          <%= number_with_precision(batch.initial_quantity, precision: 2) %>
+        </p>
+      </div>
+      
+      <div>
+        <p class="text-xs text-gray-500">Quantidade Atual</p>
+        <p class="text-lg font-semibold <%= batch.current_quantity.zero? ? 'text-red-600' : 'text-blue-600' %>">
+          <%= number_with_precision(batch.current_quantity, precision: 2) %>
+        </p>
+      </div>
+      
+      <div>
+        <p class="text-xs text-gray-500">Consumido</p>
+        <p class="text-lg font-semibold text-gray-600">
+          <%= number_with_precision(batch.consumed_quantity, precision: 2) %>
+          <span class="text-xs">(<%= batch.consumption_percentage %>%)</span>
+        </p>
+      </div>
+      
+      <div>
+        <p class="text-xs text-gray-500">Prioridade FIFO</p>
+        <p class="text-lg font-semibold <%= batch.available? ? 'text-green-600' : 'text-gray-400' %>">
+          <%= batch.priority_score %>
+          <%= batch.available? ? '🔼' : '❌' %>
+        </p>
+      </div>
+    </div>
+
+    <!-- Datas -->
+    <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+      <div>
+        <p class="text-gray-500">📅 Entrada:</p>
+        <p class="font-semibold"><%= l(batch.entry_date, format: :long) %></p>
+      </div>
+      
+      <div>
+        <p class="text-gray-500">⏰ Validade:</p>
+        <p class="font-semibold <%= batch.expired? ? 'text-red-600' : batch.expiring_soon? ? 'text-yellow-600' : '' %>">
+          <%= batch.expiration_date ? l(batch.expiration_date, format: :long) : "Sem validade" %>
+          <% if batch.days_until_expiration %>
+            <span class="text-xs">
+              (<%= batch.days_until_expiration %> dias)
+            </span>
+          <% end %>
+        </p>
+      </div>
+    </div>
+
+    <!-- Fornecedor e Custo -->
+    <% if batch.supplier.present? || batch.unit_cost.present? %>
+      <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+        <% if batch.supplier.present? %>
+          <div>
+            <p class="text-gray-500">🏪 Fornecedor:</p>
+            <p class="font-semibold"><%= batch.supplier %></p>
+          </div>
+        <% end %>
+        
+        <% if batch.unit_cost.present? %>
+          <div>
+            <p class="text-gray-500">💰 Custo Unitário:</p>
+            <p class="font-semibold">R$ <%= number_with_precision(batch.unit_cost, precision: 2) %></p>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- Barra de Progresso -->
+    <div class="mb-4">
+      <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div class="h-full <%= batch.consumption_percentage < 50 ? 'bg-green-500' : batch.consumption_percentage < 80 ? 'bg-yellow-500' : 'bg-red-500' %>"
+             style="width: <%= batch.consumption_percentage %>%"></div>
+      </div>
+      <p class="text-xs text-gray-500 mt-1 text-right">
+        <%= batch.consumption_percentage %>% consumido
+      </p>
+    </div>
+
+    <!-- Ações -->
+    <div class="flex gap-2">
+      <%= link_to "Ver Detalhes", supply_batch_path(batch),
+                  class: "flex-1 text-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition" %>
+      
+      <% if batch.available? %>
+        <%= link_to "Consumir", "#",
+                    data: { 
+                      action: "click->supply-batch#showConsumeModal",
+                      batch_id: batch.id,
+                      max_quantity: batch.current_quantity
+                    },
+                    class: "flex-1 text-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition" %>
+      <% end %>
+      
+      <%= link_to "Editar", edit_supply_batch_path(batch),
+                  data: { turbo_frame: "modal" },
+                  class: "px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded transition" %>
+      
+      <%= link_to "Excluir", supply_batch_path(batch),
+                  data: { 
+                    turbo_method: :delete,
+                    turbo_confirm: "Tem certeza que deseja excluir este lote?"
+                  },
+                  class: "px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition" %>
+    </div>
+  </div>
+<% end %>
+

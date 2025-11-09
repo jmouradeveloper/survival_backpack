@@ -1,6 +1,8 @@
 class FoodItem < ApplicationRecord
   # Associações
   has_many :notifications, dependent: :destroy
+  has_many :supply_batches, dependent: :destroy
+  has_many :supply_rotations, dependent: :destroy
 
   # Validações
   validates :name, presence: true, length: { minimum: 2, maximum: 255 }
@@ -38,6 +40,61 @@ class FoodItem < ApplicationRecord
     return :expired if expired?
     return :expiring_soon if expiring_soon?
     :valid
+  end
+  
+  # Métodos FIFO
+  def active_batches
+    supply_batches.active.by_fifo_order
+  end
+  
+  def next_batch_to_consume
+    supply_batches.next_to_consume(id)
+  end
+  
+  def total_batch_quantity
+    supply_batches.active.sum(:current_quantity)
+  end
+  
+  def consume_fifo!(quantity, rotation_type: 'consumption', reason: nil, notes: nil)
+    raise ArgumentError, "Quantity must be positive" if quantity <= 0
+    raise ArgumentError, "Insufficient quantity available" if quantity > total_batch_quantity
+    
+    remaining_to_consume = quantity
+    rotations = []
+    
+    transaction do
+      active_batches.each do |batch|
+        break if remaining_to_consume <= 0
+        
+        consume_from_batch = [remaining_to_consume, batch.current_quantity].min
+        rotation = batch.consume!(
+          consume_from_batch,
+          rotation_type: rotation_type,
+          reason: reason,
+          notes: notes
+        )
+        
+        rotations << rotation
+        remaining_to_consume -= consume_from_batch
+      end
+      
+      # Atualiza a quantidade total do food_item
+      reload
+    end
+    
+    rotations
+  end
+  
+  def batch_statistics
+    {
+      total_batches: supply_batches.count,
+      active_batches: supply_batches.active.count,
+      depleted_batches: supply_batches.depleted.count,
+      expired_batches: supply_batches.expired.count,
+      total_quantity: total_batch_quantity,
+      oldest_batch_date: supply_batches.active.minimum(:entry_date),
+      next_expiration_date: supply_batches.active.where.not(expiration_date: nil).minimum(:expiration_date)
+    }
   end
 
   # Serialização para API

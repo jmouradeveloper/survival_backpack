@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_08_020800) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_09_185229) do
   create_table "food_items", force: :cascade do |t|
     t.string "name"
     t.string "category"
@@ -48,6 +48,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_08_020800) do
     t.index ["notification_type"], name: "index_notifications_on_notification_type"
     t.index ["read"], name: "index_notifications_on_read"
     t.index ["scheduled_for"], name: "index_notifications_on_scheduled_for"
+  end
+
+  create_table "supply_batches", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "supply_rotations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "notifications", "food_items"

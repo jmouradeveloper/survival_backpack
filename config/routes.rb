@@ -11,6 +11,24 @@ Rails.application.routes.draw do
 
   # Rotas Web - Gerenciamento de Alimentos
   resources :food_items
+  
+  # Rotas Web - Lotes de Suprimentos (FIFO)
+  resources :supply_batches do
+    member do
+      post :consume
+    end
+    collection do
+      get :fifo_order
+    end
+  end
+  
+  # Rotas Web - Rotações de Suprimentos
+  resources :supply_rotations, only: [:index, :show, :new, :create, :destroy] do
+    collection do
+      post :consume_fifo
+      get :statistics
+    end
+  end
 
   # Rotas Web - Notificações
   resources :notifications, only: [:index, :show, :destroy] do
@@ -35,6 +53,25 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :food_items do
         collection do
+          get :statistics
+        end
+      end
+      
+      # API - Lotes de Suprimentos (FIFO)
+      resources :supply_batches do
+        member do
+          post :consume
+        end
+        collection do
+          get :fifo_order
+          get :statistics
+        end
+      end
+      
+      # API - Rotações de Suprimentos
+      resources :supply_rotations, only: [:index, :show, :create, :destroy] do
+        collection do
+          post :consume_fifo
           get :statistics
         end
       end

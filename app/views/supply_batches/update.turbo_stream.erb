@@ -1,0 +1,11 @@
+<%= turbo_stream.replace dom_id(@supply_batch) do %>
+  <%= render "supply_batch_card", batch: @supply_batch %>
+<% end %>
+
+<%= turbo_stream.replace "modal" do %>
+<% end %>
+
+<%= turbo_stream.replace "flash" do %>
+  <%= render "shared/flash" %>
+<% end %>
+
