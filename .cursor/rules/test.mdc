@@ -1,0 +1,8 @@
+---
+descripition: Regras para manutenção dos testes automatizados
+alwaysApply: true
+---
+- Sempre que um código novo é inserido na codebase, deve ser inserido um teste automatizado para garantir o correto funcionamento do algorítimo
+- Sempre que o comportamento de um código for alterado, adapte os testes automatizados para garantir que o comportamento alterado não comprometa o correto funcionamento do sistema
+- Sempre que um código novo for alterado ou inserido, deve-se iniciar o desenvolvimento pela adaptação ou criação dos testes automatizados
+- Sempre que um comportamento no sistema for alterado e esse comportamento não tiver cobertura de testes automatizados, deve-se iniciar o desenvolvimento criando os testes
