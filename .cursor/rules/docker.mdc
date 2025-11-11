@@ -1,0 +1,266 @@
+---
+title: Regras de Desenvolvimento com Docker
+description: Regras obrigatórias para execução de comandos via Docker
+tags: [docker, development, testing, rails]
+priority: critical
+---
+
+# Regras de Desenvolvimento com Docker
+
+Este projeto utiliza **Docker para desenvolvimento** e **NUNCA deve executar comandos diretamente no sistema local**.
+
+## ⚠️ REGRA CRÍTICA
+
+**SEMPRE** utilize os scripts Docker disponíveis no diretório `bin/` para executar comandos Rails.
+**NUNCA** execute comandos Rails, bundle, npm ou qualquer comando de desenvolvimento diretamente no sistema host.
+
+---
+
+## 🧪 Testes
+
+### ❌ NUNCA faça isto:
+```bash
+rails test
+bin/rails test
+bundle exec rails test
+rake test
+```
+
+### ✅ SEMPRE faça isto:
+```bash
+bin/docker-test                                    # Todos os testes
+bin/docker-test --models                           # Apenas models
+bin/docker-test --controllers                      # Apenas controllers
+bin/docker-test --integration                      # Testes de integração
+bin/docker-test --system                           # Testes de sistema
+bin/docker-test --file test/models/food_item_test.rb  # Teste específico
+bin/docker-test --coverage                         # Com cobertura
+bin/docker-test --verbose                          # Modo verbose
+```
+
+### Exemplos de uso:
+- Testar um model específico: `bin/docker-test --file test/models/food_item_test.rb`
+- Testar todos os controllers: `bin/docker-test --controllers`
+- Ver cobertura de código: `bin/docker-test --coverage`
+
+### 🔄 Sincronização Automática:
+O script `bin/docker-test` **sincroniza automaticamente** o banco de dados de testes antes de executar os testes. Você não precisa fazer nada manualmente!
+
+---
+
+## 💻 Console Rails
+
+### ❌ NUNCA faça isto:
+```bash
+rails console
+bin/rails console
+rails c
+```
+
+### ✅ SEMPRE faça isto:
+```bash
+bin/docker-console
+```
+
+---
+
+## 🗄️ Migrations e Database
+
+### ❌ NUNCA faça isto:
+```bash
+rails db:migrate
+rails db:seed
+rails db:rollback
+rails db:reset
+```
+
+### ✅ SEMPRE faça isto:
+```bash
+docker compose exec web bin/rails db:migrate
+docker compose exec web bin/rails db:seed
+docker compose exec web bin/rails db:rollback
+docker compose exec web bin/rails db:reset
+docker compose exec web bin/rails db:create
+docker compose exec web bin/rails db:drop
+```
+
+---
+
+## 🛠️ Generators Rails
+
+### ❌ NUNCA faça isto:
+```bash
+rails generate model User
+rails generate controller Users
+rails generate migration AddFieldToTable
+```
+
+### ✅ SEMPRE faça isto:
+```bash
+docker compose exec web bin/rails generate model User
+docker compose exec web bin/rails generate controller Users
+docker compose exec web bin/rails generate migration AddFieldToTable
+```
+
+---
+
+## 📦 Bundle e Dependências
+
+### ❌ NUNCA faça isto:
+```bash
+bundle install
+bundle update
+gem install [gem_name]
+```
+
+### ✅ SEMPRE faça isto:
+```bash
+# Instalar gems
+docker compose exec web bundle install
+
+# Após adicionar gems no Gemfile, reconstruir a imagem
+docker compose build web
+
+# Ou usar o script de setup que faz tudo
+bin/docker-setup
+```
+
+---
+
+## 🔍 Linters e Análise de Código
+
+### ❌ NUNCA faça isto:
+```bash
+rubocop
+brakeman
+bundle exec rubocop
+```
+
+### ✅ SEMPRE faça isto:
+```bash
+docker compose exec web bin/rubocop
+docker compose exec web bin/brakeman
+```
+
+---
+
+## 🚀 Scripts Docker Disponíveis
+
+Os seguintes scripts estão disponíveis no diretório `bin/`:
+
+| Script | Descrição |
+|--------|-----------|
+| `bin/docker-up` | Iniciar containers do projeto |
+| `bin/docker-stop` | Parar containers |
+| `bin/docker-test` | Executar testes automatizados |
+| `bin/docker-console` | Acessar console Rails |
+| `bin/docker-logs` | Ver logs dos containers |
+| `bin/docker-setup` | Setup inicial do projeto (primeira vez) |
+| `bin/docker-clean` | Limpar containers, volumes e imagens |
+| `bin/docker-clean-cache` | Limpar apenas cache |
+
+---
+
+## 🔄 Workflow Comum
+
+### Iniciar o ambiente (primeira vez):
+```bash
+bin/docker-setup  # Configura tudo automaticamente, incluindo banco de testes
+```
+
+### Iniciar o ambiente (dia a dia):
+```bash
+bin/docker-up
+```
+
+### Executar testes:
+```bash
+bin/docker-test  # Sincroniza o banco de testes automaticamente antes de executar
+```
+
+### Acessar console:
+```bash
+bin/docker-console
+```
+
+### Ver logs:
+```bash
+bin/docker-logs
+```
+
+### Parar ambiente:
+```bash
+bin/docker-stop
+```
+
+### Limpar tudo:
+```bash
+bin/docker-clean
+```
+
+---
+
+## 📝 Quando Sugerir Comandos ao Usuário
+
+Quando o usuário pedir:
+
+- **"Executar testes"** → Sugira: `bin/docker-test`
+- **"Testar o modelo X"** → Sugira: `bin/docker-test --file test/models/x_test.rb`
+- **"Testar controllers"** → Sugira: `bin/docker-test --controllers`
+- **"Abrir console"** → Sugira: `bin/docker-console`
+- **"Rodar migrations"** → Sugira: `docker compose exec web bin/rails db:migrate`
+- **"Criar migration"** → Sugira: `docker compose exec web bin/rails generate migration NomeMigration`
+- **"Instalar gems"** → Sugira: `docker compose exec web bundle install && docker compose build web`
+- **"Ver logs"** → Sugira: `bin/docker-logs`
+- **"Resetar banco"** → Sugira: `docker compose exec web bin/rails db:reset`
+
+---
+
+## 🎯 Benefícios desta Abordagem
+
+1. **Consistência**: Todos os desenvolvedores usam o mesmo ambiente
+2. **Isolamento**: Não polui o sistema local com dependências
+3. **Reproduzibilidade**: "Funciona na minha máquina" deixa de ser problema
+4. **Fácil onboarding**: Novos devs apenas executam `bin/docker-setup`
+5. **CI/CD**: Mesmo ambiente em desenvolvimento e produção
+
+---
+
+## 📚 Documentação Adicional
+
+Para mais detalhes, consulte:
+- `docs/DOCKER_DEVELOPMENT.md` - Guia completo de desenvolvimento com Docker
+- `docs/DOCKER_SCRIPTS_REFERENCE.md` - Referência detalhada de todos os scripts
+- `QUICKSTART.md` - Guia rápido para começar
+
+---
+
+## ⚡ Comandos de Emergência
+
+Se algo der errado:
+
+```bash
+# Parar tudo
+bin/docker-stop
+
+# Limpar tudo e começar do zero
+bin/docker-clean
+
+# Reconfigurar o ambiente
+bin/docker-setup
+
+# Verificar status dos containers
+docker compose ps
+
+# Ver logs em tempo real
+docker compose logs -f web
+```
+
+---
+
+## 🚨 IMPORTANTE
+
+- **NUNCA execute comandos Ruby/Rails/Bundle diretamente no host**
+- **SEMPRE use Docker** através dos scripts ou `docker compose exec web`
+- Se você esquecer e executar localmente, pode causar inconsistências
+- Em caso de dúvida, consulte `docs/DOCKER_SCRIPTS_REFERENCE.md`
