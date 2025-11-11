@@ -71,9 +71,11 @@ volumes:
 asset_path: /rails/public/assets
 
 # Configure the image builder.
-# Using default builder - will push pre-built images
-# builder:
-#   arch: arm
+# Using cached builder to build image locally
+builder:
+  cache:
+    type: registry
+    options: mode=max
 
 # Use SSH user configured for the Raspberry Pi
 ssh:
