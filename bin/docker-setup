@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Script para fazer o setup inicial do Docker
+
+set -e
+
+echo "🔧 Configurando ambiente Docker para Survival Backpack..."
+
+# Verificar se docker e docker-compose estão instalados
+if ! command -v docker &> /dev/null; then
+    echo "❌ Docker não está instalado. Por favor, instale o Docker primeiro."
+    exit 1
+fi
+
+if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
+    echo "❌ Docker Compose não está instalado. Por favor, instale o Docker Compose primeiro."
+    exit 1
+fi
+
+# Criar diretórios necessários se não existirem
+echo "📁 Criando diretórios necessários..."
+mkdir -p storage log tmp
+
+# Buildar a imagem
+echo "🏗️  Buildando a imagem Docker..."
+if docker compose version &> /dev/null; then
+    docker compose build
+else
+    docker-compose build
+fi
+
+# Subir os containers
+echo "🚀 Iniciando os containers..."
+if docker compose version &> /dev/null; then
+    docker compose up -d
+else
+    docker-compose up -d
+fi
+
+# Aguardar um momento para os containers iniciarem
+echo "⏳ Aguardando containers iniciarem..."
+sleep 5
+
+# Preparar o banco de dados
+echo "🗄️  Preparando banco de dados..."
+if docker compose version &> /dev/null; then
+    docker compose exec web bin/rails db:prepare
+else
+    docker-compose exec web bin/rails db:prepare
+fi
+
+echo ""
+echo "✅ Setup concluído com sucesso!"
+echo "📍 Acesse a aplicação em: http://localhost:3000"
+echo ""
+echo "Comandos úteis:"
+echo "  - Ver logs: bin/docker-logs"
+echo "  - Executar testes: bin/docker-test"
+echo "  - Console: bin/docker-console"
+echo "  - Parar app: bin/docker-stop"
+echo "  - Limpar tudo: bin/docker-clean"
+

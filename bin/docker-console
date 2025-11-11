@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Script para acessar o console Rails no container Docker
+
+set -e
+
+# Verificar se docker está instalado
+if ! command -v docker &> /dev/null; then
+    echo "❌ Docker não está instalado."
+    exit 1
+fi
+
+# Verificar se o container está rodando
+CONTAINER_NAME="survival_backpack_web"
+if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    echo "❌ Container ${CONTAINER_NAME} não está rodando."
+    echo "Execute primeiro: bin/docker-up"
+    exit 1
+fi
+
+echo "🚀 Acessando console Rails no container..."
+echo "💡 Para sair, digite 'exit' ou pressione Ctrl+D"
+echo ""
+
+# Acessar o console Rails
+if docker compose version &> /dev/null; then
+    docker compose exec web bin/rails console
+else
+    docker-compose exec web bin/rails console
+fi
+

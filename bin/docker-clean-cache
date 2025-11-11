@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# Script para limpar cache e arquivos temporários usando o container Docker
+# Útil para limpar arquivos criados pelo container sem problemas de permissão
+
+set -e
+
+echo "🧹 Limpando cache da aplicação via Docker..."
+
+# Verificar se docker está instalado
+if ! command -v docker &> /dev/null; then
+    echo "❌ Docker não está instalado."
+    exit 1
+fi
+
+# Verificar se o container está rodando
+CONTAINER_NAME="survival_backpack_web"
+if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    echo "⚠️  Container ${CONTAINER_NAME} não está rodando."
+    echo "Iniciando container temporariamente para limpeza..."
+    
+    # Iniciar container temporário
+    if docker compose version &> /dev/null; then
+        docker compose up -d
+    else
+        docker-compose up -d
+    fi
+    
+    TEMP_START=true
+    sleep 3
+fi
+
+echo "🗑️  Limpando tmp/cache/..."
+if docker compose version &> /dev/null; then
+    docker compose exec web rm -rf tmp/cache/*
+else
+    docker-compose exec web rm -rf tmp/cache/*
+fi
+
+echo "🗑️  Limpando log/*.log..."
+if docker compose version &> /dev/null; then
+    docker compose exec web sh -c "find log -name '*.log' -type f -exec truncate -s 0 {} \;"
+else
+    docker-compose exec web sh -c "find log -name '*.log' -type f -exec truncate -s 0 {} \;"
+fi
+
+# Parar container se foi iniciado temporariamente
+if [ "${TEMP_START}" = "true" ]; then
+    echo "🛑 Parando container temporário..."
+    if docker compose version &> /dev/null; then
+        docker compose stop
+    else
+        docker-compose stop
+    fi
+fi
+
+echo ""
+echo "✅ Limpeza de cache concluída!"
+echo ""
+echo "Cache e logs foram limpos dentro do container Docker."
+

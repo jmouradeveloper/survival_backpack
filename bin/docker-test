@@ -1,0 +1,156 @@
+#!/usr/bin/env bash
+# Script para executar testes automatizados no container Docker
+
+set -e
+
+# Verificar se docker está instalado
+if ! command -v docker &> /dev/null; then
+    echo "❌ Docker não está instalado."
+    exit 1
+fi
+
+# Verificar se o container está rodando
+CONTAINER_NAME="survival_backpack_web"
+CONTAINER_RUNNING=false
+
+if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    CONTAINER_RUNNING=true
+fi
+
+# Função de ajuda
+show_help() {
+    echo "🧪 Uso: bin/docker-test [OPÇÕES]"
+    echo ""
+    echo "Opções:"
+    echo "  --all              Executar todos os testes (padrão)"
+    echo "  --models           Executar apenas testes de models"
+    echo "  --controllers      Executar apenas testes de controllers"
+    echo "  --integration      Executar apenas testes de integração"
+    echo "  --system           Executar testes de sistema"
+    echo "  --file PATH        Executar testes de um arquivo específico"
+    echo "  --coverage         Executar com relatório de cobertura"
+    echo "  --verbose          Modo verbose"
+    echo "  -h, --help         Mostrar esta ajuda"
+    echo ""
+    echo "Exemplos:"
+    echo "  bin/docker-test                           # Todos os testes"
+    echo "  bin/docker-test --models                  # Apenas models"
+    echo "  bin/docker-test --file test/models/food_item_test.rb"
+    echo "  bin/docker-test --coverage                # Com cobertura"
+    echo ""
+}
+
+# Valores padrão
+TEST_CMD="bin/rails test"
+VERBOSE=false
+START_CONTAINER=false
+
+# Processar argumentos
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --all)
+            TEST_CMD="bin/rails test"
+            shift
+            ;;
+        --models)
+            TEST_CMD="bin/rails test test/models/"
+            shift
+            ;;
+        --controllers)
+            TEST_CMD="bin/rails test test/controllers/"
+            shift
+            ;;
+        --integration)
+            TEST_CMD="bin/rails test test/integration/"
+            shift
+            ;;
+        --system)
+            TEST_CMD="bin/rails test:system"
+            shift
+            ;;
+        --file)
+            TEST_CMD="bin/rails test $2"
+            shift 2
+            ;;
+        --coverage)
+            TEST_CMD="COVERAGE=true bin/rails test"
+            shift
+            ;;
+        --verbose)
+            VERBOSE=true
+            TEST_CMD="${TEST_CMD} --verbose"
+            shift
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            echo "❌ Opção desconhecida: $1"
+            echo ""
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
+# Verificar/iniciar container se necessário
+if [ "$CONTAINER_RUNNING" = false ]; then
+    echo "⚠️  Container ${CONTAINER_NAME} não está rodando."
+    echo "🚀 Iniciando container temporariamente..."
+    
+    if docker compose version &> /dev/null; then
+        docker compose up -d
+    else
+        docker-compose up -d
+    fi
+    
+    START_CONTAINER=true
+    echo "⏳ Aguardando container iniciar..."
+    sleep 5
+fi
+
+echo "🧪 Executando testes..."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Executar testes
+EXIT_CODE=0
+if docker compose version &> /dev/null; then
+    docker compose exec web ${TEST_CMD} || EXIT_CODE=$?
+else
+    docker-compose exec web ${TEST_CMD} || EXIT_CODE=$?
+fi
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Parar container se foi iniciado temporariamente
+if [ "$START_CONTAINER" = true ]; then
+    echo "🛑 Parando container temporário..."
+    if docker compose version &> /dev/null; then
+        docker compose stop
+    else
+        docker-compose stop
+    fi
+fi
+
+# Exibir resultado
+echo ""
+if [ $EXIT_CODE -eq 0 ]; then
+    echo "✅ Todos os testes passaram!"
+    echo ""
+    echo "Comandos úteis:"
+    echo "  - Ver cobertura: bin/docker-test --coverage"
+    echo "  - Testar models: bin/docker-test --models"
+    echo "  - Modo verbose: bin/docker-test --verbose"
+else
+    echo "❌ Alguns testes falharam!"
+    echo ""
+    echo "Dicas:"
+    echo "  - Ver logs: bin/docker-logs"
+    echo "  - Console Rails: bin/docker-console"
+    echo "  - Executar teste específico: bin/docker-test --file test/path/to/test.rb"
+    exit $EXIT_CODE
+fi
+

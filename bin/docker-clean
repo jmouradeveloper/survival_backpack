@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+# Script para limpar containers e volumes Docker
+
+set -e
+
+echo "🧹 Limpando ambiente Docker do Survival Backpack..."
+
+# Verificar se docker-compose está instalado
+if ! command -v docker &> /dev/null; then
+    echo "❌ Docker não está instalado."
+    exit 1
+fi
+
+# Confirmar ação
+read -p "⚠️  Isso irá remover todos os containers, volumes e dados. Continuar? (y/N) " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "❌ Operação cancelada."
+    exit 1
+fi
+
+# Parar e remover containers
+echo "🛑 Parando containers..."
+if docker compose version &> /dev/null; then
+    docker compose down
+else
+    docker-compose down
+fi
+
+# Remover volumes
+echo "🗑️  Removendo volumes..."
+if docker compose version &> /dev/null; then
+    docker compose down -v
+else
+    docker-compose down -v
+fi
+
+# Remover imagens relacionadas (opcional)
+read -p "Deseja remover também as imagens Docker? (y/N) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "🗑️  Removendo imagens..."
+    if docker compose version &> /dev/null; then
+        docker compose down -v --rmi all
+    else
+        docker-compose down -v --rmi all
+    fi
+fi
+
+# Limpar arquivos temporários locais (opcional)
+read -p "Deseja limpar também os arquivos temporários locais (log, tmp)? (y/N) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "🗑️  Limpando arquivos temporários..."
+    
+    # Tentar remover normalmente
+    echo "Removendo arquivos com permissões normais..."
+    find log -type f -delete 2>/dev/null || true
+    find tmp -type f -delete 2>/dev/null || true
+    find log -type d -empty -delete 2>/dev/null || true
+    find tmp -type d -empty -delete 2>/dev/null || true
+    
+    # Verificar se ainda há arquivos (que precisam de sudo)
+    if [ -n "$(find log tmp -type f 2>/dev/null)" ]; then
+        echo ""
+        echo "⚠️  Alguns arquivos foram criados pelo Docker e precisam de permissões elevadas."
+        read -p "Deseja usar sudo para remover esses arquivos? (y/N) " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            echo "🔐 Usando sudo para remover arquivos restantes..."
+            sudo find log -type f -delete 2>/dev/null || true
+            sudo find tmp -type f -delete 2>/dev/null || true
+            sudo find log -type d -empty -delete 2>/dev/null || true
+            sudo find tmp -type d -empty -delete 2>/dev/null || true
+            echo "✅ Arquivos removidos com sucesso!"
+        else
+            echo "⚠️  Alguns arquivos permaneceram. Execute manualmente: sudo rm -rf log/* tmp/*"
+        fi
+    else
+        echo "✅ Arquivos temporários removidos com sucesso!"
+    fi
+fi
+
+echo ""
+echo "✅ Limpeza concluída!"
+echo ""
+echo "Para reconfigurar o ambiente: bin/docker-setup"
+

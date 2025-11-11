@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+# Script para acompanhar logs dos serviços Docker
+
+set -e
+
+# Verificar se docker está instalado
+if ! command -v docker &> /dev/null; then
+    echo "❌ Docker não está instalado."
+    exit 1
+fi
+
+# Verificar se o container está rodando
+CONTAINER_NAME="survival_backpack_web"
+if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    echo "❌ Container ${CONTAINER_NAME} não está rodando."
+    echo "Execute primeiro: bin/docker-up"
+    exit 1
+fi
+
+# Função de ajuda
+show_help() {
+    echo "📋 Uso: bin/docker-logs [OPÇÕES]"
+    echo ""
+    echo "Opções:"
+    echo "  -f, --follow       Acompanhar logs em tempo real (padrão)"
+    echo "  -n, --tail NUM     Mostrar apenas as últimas NUM linhas (padrão: 100)"
+    echo "  --all              Mostrar todos os logs desde o início"
+    echo "  --no-follow        Mostrar logs sem acompanhar em tempo real"
+    echo "  -h, --help         Mostrar esta ajuda"
+    echo ""
+    echo "Exemplos:"
+    echo "  bin/docker-logs                    # Últimas 100 linhas + acompanhar"
+    echo "  bin/docker-logs -n 50              # Últimas 50 linhas + acompanhar"
+    echo "  bin/docker-logs --all              # Todos os logs + acompanhar"
+    echo "  bin/docker-logs --no-follow        # Últimas 100 linhas sem acompanhar"
+    echo ""
+}
+
+# Valores padrão
+FOLLOW=true
+TAIL="100"
+SHOW_ALL=false
+
+# Processar argumentos
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -f|--follow)
+            FOLLOW=true
+            shift
+            ;;
+        --no-follow)
+            FOLLOW=false
+            shift
+            ;;
+        -n|--tail)
+            TAIL="$2"
+            shift 2
+            ;;
+        --all)
+            SHOW_ALL=true
+            shift
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            echo "❌ Opção desconhecida: $1"
+            echo ""
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
+# Construir comando
+CMD_ARGS=""
+
+if [ "$SHOW_ALL" = true ]; then
+    echo "📜 Mostrando todos os logs do container ${CONTAINER_NAME}..."
+else
+    echo "📜 Mostrando últimas ${TAIL} linhas dos logs do container ${CONTAINER_NAME}..."
+    CMD_ARGS="--tail=${TAIL}"
+fi
+
+if [ "$FOLLOW" = true ]; then
+    echo "👀 Acompanhando logs em tempo real... (Ctrl+C para sair)"
+    CMD_ARGS="${CMD_ARGS} --follow"
+fi
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Executar comando de logs
+if docker compose version &> /dev/null; then
+    docker compose logs ${CMD_ARGS} web
+else
+    docker-compose logs ${CMD_ARGS} web
+fi
+

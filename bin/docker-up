@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Script para subir a aplicação via Docker
+
+set -e
+
+echo "🚀 Iniciando a aplicação Survival Backpack via Docker..."
+
+# Verificar se docker e docker-compose estão instalados
+if ! command -v docker &> /dev/null; then
+    echo "❌ Docker não está instalado. Por favor, instale o Docker primeiro."
+    exit 1
+fi
+
+if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
+    echo "❌ Docker Compose não está instalado. Por favor, instale o Docker Compose primeiro."
+    exit 1
+fi
+
+# Subir os containers
+if docker compose version &> /dev/null; then
+    docker compose up -d
+else
+    docker-compose up -d
+fi
+
+echo "✅ Aplicação iniciada com sucesso!"
+echo "📍 Acesse a aplicação em: http://localhost:3000"
+echo ""
+echo "Comandos úteis:"
+echo "  - Ver logs: bin/docker-logs"
+echo "  - Executar testes: bin/docker-test"
+echo "  - Console: bin/docker-console"
+echo "  - Parar app: bin/docker-stop"
+
