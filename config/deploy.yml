@@ -71,8 +71,9 @@ volumes:
 asset_path: /rails/public/assets
 
 # Configure the image builder.
-# Using cached builder to build image locally
+# Build locally for ARM architecture
 builder:
+  arch: arm
   cache:
     type: registry
     options: mode=max
