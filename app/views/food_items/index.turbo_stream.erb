@@ -1,0 +1,6 @@
+<%= turbo_stream.update "food_items_list" do %>
+  <% @food_items.each do |food_item| %>
+    <%= render food_item %>
+  <% end %>
+<% end %>
+

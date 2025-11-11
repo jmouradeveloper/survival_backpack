@@ -54,6 +54,10 @@ class SupplyBatch < ApplicationRecord
     expiration_date.present? && expiration_date < Date.today
   end
   
+  def depleted?
+    status == 'depleted'
+  end
+  
   def expiring_soon?(days = 7)
     expiration_date.present? && 
     expiration_date <= Date.today + days.days && 
@@ -167,7 +171,7 @@ class SupplyBatch < ApplicationRecord
   def check_and_update_status
     if current_quantity.zero? && !depleted?
       update_column(:status, 'depleted')
-    elsif expired? && !expired?
+    elsif expired? && status != 'expired'
       update_column(:status, 'expired')
     end
   end
