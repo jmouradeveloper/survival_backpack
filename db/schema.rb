@@ -53,12 +53,32 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_09_185229) do
   create_table "supply_batches", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "food_item_id", null: false
+    t.decimal "initial_quantity", precision: 10, scale: 2, null: false
+    t.decimal "current_quantity", precision: 10, scale: 2, null: false
+    t.date "entry_date", null: false
+    t.date "expiration_date"
+    t.text "batch_code"
+    t.text "supplier"
+    t.decimal "unit_cost", precision: 10, scale: 2
+    t.text "notes"
+    t.text "status", default: "active", null: false
   end
 
   create_table "supply_rotations", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "supply_batch_id", null: false
+    t.integer "food_item_id", null: false
+    t.decimal "quantity", precision: 10, scale: 2, null: false
+    t.date "rotation_date", null: false
+    t.text "rotation_type", null: false
+    t.text "reason"
+    t.text "notes"
   end
 
   add_foreign_key "notifications", "food_items"
+  add_foreign_key "supply_batches", "food_items"
+  add_foreign_key "supply_rotations", "food_items"
+  add_foreign_key "supply_rotations", "supply_batches"
 end

@@ -40,12 +40,24 @@ fi
 echo "⏳ Aguardando containers iniciarem..."
 sleep 5
 
-# Preparar o banco de dados
-echo "🗄️  Preparando banco de dados..."
+# Preparar o banco de dados de desenvolvimento
+echo "🗄️  Preparando banco de dados de desenvolvimento..."
 if docker compose version &> /dev/null; then
     docker compose exec web bin/rails db:prepare
 else
     docker-compose exec web bin/rails db:prepare
+fi
+
+# Preparar o banco de dados de testes
+echo "🧪 Preparando banco de dados de testes..."
+if docker compose version &> /dev/null; then
+    docker compose exec web bin/rails db:create RAILS_ENV=test
+    docker compose exec web bin/rails db:environment:set RAILS_ENV=test
+    docker compose exec web bin/rails db:schema:load RAILS_ENV=test
+else
+    docker-compose exec web bin/rails db:create RAILS_ENV=test
+    docker-compose exec web bin/rails db:environment:set RAILS_ENV=test
+    docker-compose exec web bin/rails db:schema:load RAILS_ENV=test
 fi
 
 echo ""

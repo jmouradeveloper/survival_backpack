@@ -110,6 +110,26 @@ if [ "$CONTAINER_RUNNING" = false ]; then
     sleep 5
 fi
 
+# Preparar banco de dados de testes (garante que está atualizado)
+echo "🗄️  Sincronizando banco de dados de testes..."
+if docker compose version &> /dev/null; then
+    # Aplicar migrations no ambiente de desenvolvimento (silencioso se já aplicadas)
+    docker compose exec web bin/rails db:migrate 2>&1 | grep -v "migrated" | grep -v "^$" || true
+    # Criar e carregar o schema no banco de testes
+    docker compose exec web bin/rails db:create RAILS_ENV=test 2>&1 | grep -v "already exists" || true
+    docker compose exec web bin/rails db:environment:set RAILS_ENV=test 2>&1 || true
+    docker compose exec web bin/rails db:schema:load RAILS_ENV=test 2>&1 | grep -v "^$" || true
+else
+    # Aplicar migrations no ambiente de desenvolvimento (silencioso se já aplicadas)
+    docker-compose exec web bin/rails db:migrate 2>&1 | grep -v "migrated" | grep -v "^$" || true
+    # Criar e carregar o schema no banco de testes  
+    docker-compose exec web bin/rails db:create RAILS_ENV=test 2>&1 | grep -v "already exists" || true
+    docker-compose exec web bin/rails db:environment:set RAILS_ENV=test 2>&1 || true
+    docker-compose exec web bin/rails db:schema:load RAILS_ENV=test 2>&1 | grep -v "^$" || true
+fi
+echo "✅ Banco de testes pronto!"
+echo ""
+
 echo "🧪 Executando testes..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""

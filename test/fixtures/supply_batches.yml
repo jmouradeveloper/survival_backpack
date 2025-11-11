@@ -1,0 +1,68 @@
+# Fixtures para SupplyBatch
+
+# Lote ativo para arroz
+rice_batch_1:
+  food_item: rice
+  initial_quantity: 3.0
+  current_quantity: 3.0
+  entry_date: <%= 20.days.ago.to_date %>
+  expiration_date: <%= 30.days.from_now.to_date %>
+  status: "active"
+  created_at: <%= 20.days.ago %>
+  updated_at: <%= 20.days.ago %>
+
+# Lote ativo mais antigo para arroz (deve ser consumido primeiro)
+rice_batch_2:
+  food_item: rice
+  initial_quantity: 2.0
+  current_quantity: 2.0
+  entry_date: <%= 30.days.ago.to_date %>
+  expiration_date: <%= 20.days.from_now.to_date %>
+  status: "active"
+  created_at: <%= 30.days.ago %>
+  updated_at: <%= 30.days.ago %>
+
+# Lote ativo para feijão
+beans_batch_1:
+  food_item: beans
+  initial_quantity: 3.5
+  current_quantity: 3.5
+  entry_date: <%= 15.days.ago.to_date %>
+  expiration_date: <%= 5.days.from_now.to_date %>
+  status: "active"
+  created_at: <%= 15.days.ago %>
+  updated_at: <%= 15.days.ago %>
+
+# Lote parcialmente consumido
+tuna_batch_1:
+  food_item: canned_tuna
+  initial_quantity: 12.0
+  current_quantity: 8.0
+  entry_date: <%= 10.days.ago.to_date %>
+  expiration_date: <%= 180.days.from_now.to_date %>
+  status: "active"
+  created_at: <%= 10.days.ago %>
+  updated_at: <%= 5.days.ago %>
+
+# Lote totalmente consumido (depleted)
+honey_batch_depleted:
+  food_item: honey
+  initial_quantity: 1.0
+  current_quantity: 0
+  entry_date: <%= 60.days.ago.to_date %>
+  expiration_date: <%= 300.days.from_now.to_date %>
+  status: "depleted"
+  created_at: <%= 60.days.ago %>
+  updated_at: <%= 10.days.ago %>
+
+# Lote expirado
+milk_batch_expired:
+  food_item: expired_milk
+  initial_quantity: 1.0
+  current_quantity: 1.0
+  entry_date: <%= 70.days.ago.to_date %>
+  expiration_date: <%= 5.days.ago.to_date %>
+  status: "expired"
+  created_at: <%= 70.days.ago %>
+  updated_at: <%= 70.days.ago %>
+
