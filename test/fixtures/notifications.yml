@@ -2,6 +2,7 @@
 
 # Notificação não lida - alta prioridade
 one:
+  user: regular_user
   food_item: beans
   title: "🔴 Feijão Preto vence em breve!"
   body: "Este alimento vence em 5 dias."
@@ -15,6 +16,7 @@ one:
 
 # Notificação lida - prioridade média
 two:
+  user: regular_user
   food_item: chocolate
   title: "🟡 Chocolate 70% vence em breve"
   body: "Este alimento vence em 7 dias."
@@ -28,6 +30,7 @@ two:
 
 # Notificação não lida - urgente
 three:
+  user: regular_user
   food_item: expired_milk
   title: "🔴 Leite em Pó expirado!"
   body: "Atenção! Este alimento está expirado."
@@ -41,6 +44,7 @@ three:
 
 # Notificação não lida - prioridade baixa
 four:
+  user: regular_user
   food_item: rice
   title: "📅 Arroz Integral vence em 30 dias"
   body: "Este alimento vence em 30 dias."
@@ -54,6 +58,7 @@ four:
 
 # Notificação agendada para o futuro
 five:
+  user: regular_user
   food_item: canned_tuna
   title: "📅 Atum em Lata vence em 180 dias"
   body: "Este alimento vence em 180 dias."

@@ -18,20 +18,27 @@ class ApiTokenTest < ActiveSupport::TestCase
   test "should require user" do
     token = ApiToken.new(name: "Test Token")
     assert_not token.valid?
-    assert_includes token.errors[:user], "must exist"
+    assert_includes token.errors[:user], "é obrigatório(a)"
   end
   
   test "should require name" do
     token = @user.api_tokens.build
     assert_not token.valid?
-    assert_includes token.errors[:name], "can't be blank"
+    assert_includes token.errors[:name], "não pode ficar em branco"
   end
   
   test "should require unique token_digest" do
     token1 = @user.api_tokens.create!(name: "Token 1")
+    
+    # Criar um token e forçar o mesmo digest (simulando um conflito)
+    # Precisamos pular o callback que gera o token
     token2 = @user.api_tokens.build(name: "Token 2")
+    token2.define_singleton_method(:generate_token) { } # Desabilita o callback
     token2.token_digest = token1.token_digest
-    assert_not token2.valid?
+    token2.raw_token = "dummy_token"
+    
+    assert_not token2.valid?, "Token with duplicate digest should be invalid"
+    assert_includes token2.errors[:token_digest], "já está em uso"
   end
   
   test "should set default expiration" do

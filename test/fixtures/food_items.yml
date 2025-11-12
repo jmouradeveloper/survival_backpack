@@ -2,6 +2,7 @@
 
 # Item válido com data futura
 rice:
+  user: regular_user
   name: "Arroz Integral"
   category: "grains"
   quantity: 5.0
@@ -13,6 +14,7 @@ rice:
 
 # Item expirando em breve (5 dias)
 beans:
+  user: regular_user
   name: "Feijão Preto"
   category: "legumes"
   quantity: 3.5
@@ -24,6 +26,7 @@ beans:
 
 # Item expirado
 expired_milk:
+  user: regular_user
   name: "Leite em Pó"
   category: "dairy"
   quantity: 1.0
@@ -35,6 +38,7 @@ expired_milk:
 
 # Item sem data de validade
 salt:
+  user: regular_user
   name: "Sal Marinho"
   category: "seasonings"
   quantity: 2.0
@@ -46,6 +50,7 @@ salt:
 
 # Item em local diferente
 canned_tuna:
+  user: regular_user
   name: "Atum em Lata"
   category: "canned"
   quantity: 12.0
@@ -57,6 +62,7 @@ canned_tuna:
 
 # Item com quantidade zero
 empty_pasta:
+  user: regular_user
   name: "Macarrão Integral"
   category: "grains"
   quantity: 0
@@ -68,6 +74,7 @@ empty_pasta:
 
 # Item com data bem futura
 honey:
+  user: regular_user
   name: "Mel Puro"
   category: "sweeteners"
   quantity: 1.5
@@ -79,6 +86,7 @@ honey:
 
 # Item expirando no limite (7 dias)
 chocolate:
+  user: regular_user
   name: "Chocolate 70%"
   category: "snacks"
   quantity: 0.5

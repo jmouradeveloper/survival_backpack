@@ -16,14 +16,14 @@ class UserTest < ActiveSupport::TestCase
   test "should require email" do
     @user.email = nil
     assert_not @user.valid?
-    assert_includes @user.errors[:email], "can't be blank"
+    assert_includes @user.errors[:email], "não pode ficar em branco"
   end
   
   test "should require unique email" do
     @user.save
     duplicate_user = @user.dup
     assert_not duplicate_user.valid?
-    assert_includes duplicate_user.errors[:email], "has already been taken"
+    assert_includes duplicate_user.errors[:email], "já está em uso"
   end
   
   test "should normalize email to lowercase" do
@@ -48,7 +48,7 @@ class UserTest < ActiveSupport::TestCase
   test "should require minimum password length" do
     @user.password = @user.password_confirmation = "Pass1!"
     assert_not @user.valid?
-    assert_includes @user.errors[:password], "is too short (minimum is 8 characters)"
+    assert_includes @user.errors[:password], "é muito curto (mínimo: 8 caracteres)"
   end
   
   test "should require password complexity" do

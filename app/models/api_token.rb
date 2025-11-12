@@ -2,7 +2,7 @@ class ApiToken < ApplicationRecord
   belongs_to :user
   
   # Callbacks
-  before_create :generate_token
+  before_validation :generate_token, on: :create
   before_create :set_default_expiration
   
   # Validations

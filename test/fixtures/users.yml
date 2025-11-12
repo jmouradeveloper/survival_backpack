@@ -1,13 +1,25 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  email: MyString
-  password_digest: MyString
-  role: 1
-  last_login_at: 2025-11-12 21:46:23
+admin:
+  email: "admin@test.com"
+  password_digest: <%= BCrypt::Password.create("Password123!", cost: 4) %>
+  role: 1  # admin
+  last_login_at: <%= 1.day.ago %>
+  created_at: <%= 10.days.ago %>
+  updated_at: <%= 1.day.ago %>
 
-two:
-  email: MyString
-  password_digest: MyString
-  role: 1
-  last_login_at: 2025-11-12 21:46:23
+regular_user:
+  email: "user@test.com"
+  password_digest: <%= BCrypt::Password.create("Password123!", cost: 4) %>
+  role: 0  # user
+  last_login_at: <%= 1.day.ago %>
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 1.day.ago %>
+
+another_user:
+  email: "another@test.com"
+  password_digest: <%= BCrypt::Password.create("Password123!", cost: 4) %>
+  role: 0  # user
+  last_login_at: <%= 2.days.ago %>
+  created_at: <%= 7.days.ago %>
+  updated_at: <%= 2.days.ago %>

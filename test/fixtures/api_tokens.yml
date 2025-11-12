@@ -1,15 +1,28 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# Fixtures para ApiToken
 
-one:
-  user: one
-  token_digest: MyString
-  name: MyString
-  last_used_at: 2025-11-12 21:46:35
-  expires_at: 2025-11-12 21:46:35
+admin_token:
+  user: admin
+  name: "Test Admin Token"
+  token_digest: <%= ApiToken.hash_token("test_admin_token_123") %>
+  last_used_at: <%= 1.hour.ago %>
+  expires_at: <%= 90.days.from_now %>
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 1.hour.ago %>
 
-two:
-  user: two
-  token_digest: MyString
-  name: MyString
-  last_used_at: 2025-11-12 21:46:35
-  expires_at: 2025-11-12 21:46:35
+user_token:
+  user: regular_user
+  name: "Test User Token"
+  token_digest: <%= ApiToken.hash_token("test_user_token_456") %>
+  last_used_at: <%= 2.hours.ago %>
+  expires_at: <%= 90.days.from_now %>
+  created_at: <%= 3.days.ago %>
+  updated_at: <%= 2.hours.ago %>
+
+expired_token:
+  user: regular_user
+  name: "Expired Token"
+  token_digest: <%= ApiToken.hash_token("test_expired_token_789") %>
+  last_used_at: <%= 5.days.ago %>
+  expires_at: <%= 1.day.ago %>
+  created_at: <%= 30.days.ago %>
+  updated_at: <%= 5.days.ago %>

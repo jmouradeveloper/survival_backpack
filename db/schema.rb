@@ -31,6 +31,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_12_215633) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_food_items_on_user_id"
   end
 
   create_table "notification_preferences", force: :cascade do |t|
@@ -42,6 +44,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_12_215633) do
     t.text "push_subscription_keys"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_notification_preferences_on_user_id"
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -55,10 +59,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_12_215633) do
     t.integer "priority", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
     t.index ["food_item_id"], name: "index_notifications_on_food_item_id"
     t.index ["notification_type"], name: "index_notifications_on_notification_type"
     t.index ["read"], name: "index_notifications_on_read"
     t.index ["scheduled_for"], name: "index_notifications_on_scheduled_for"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
   create_table "supply_batches", force: :cascade do |t|
@@ -74,6 +80,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_12_215633) do
     t.decimal "unit_cost", precision: 10, scale: 2
     t.text "notes"
     t.text "status", default: "active", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_supply_batches_on_user_id"
   end
 
   create_table "supply_rotations", force: :cascade do |t|
@@ -86,6 +94,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_12_215633) do
     t.text "rotation_type", null: false
     t.text "reason"
     t.text "notes"
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_supply_rotations_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -98,9 +108,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_12_215633) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  add_foreign_key "api_tokens", "users"
+  add_foreign_key "food_items", "users"
+  add_foreign_key "notification_preferences", "users"
   add_foreign_key "notifications", "food_items"
+  add_foreign_key "notifications", "users"
   add_foreign_key "supply_batches", "food_items"
+  add_foreign_key "supply_batches", "users"
   add_foreign_key "supply_rotations", "food_items"
   add_foreign_key "supply_rotations", "supply_batches"
+  add_foreign_key "supply_rotations", "users"
 end

@@ -2,6 +2,7 @@
 
 # Lote ativo para arroz
 rice_batch_1:
+  user: regular_user
   food_item: rice
   initial_quantity: 3.0
   current_quantity: 3.0
@@ -13,6 +14,7 @@ rice_batch_1:
 
 # Lote ativo mais antigo para arroz (deve ser consumido primeiro)
 rice_batch_2:
+  user: regular_user
   food_item: rice
   initial_quantity: 2.0
   current_quantity: 2.0
@@ -24,6 +26,7 @@ rice_batch_2:
 
 # Lote ativo para feijão
 beans_batch_1:
+  user: regular_user
   food_item: beans
   initial_quantity: 3.5
   current_quantity: 3.5
@@ -35,6 +38,7 @@ beans_batch_1:
 
 # Lote parcialmente consumido
 tuna_batch_1:
+  user: regular_user
   food_item: canned_tuna
   initial_quantity: 12.0
   current_quantity: 8.0
@@ -46,6 +50,7 @@ tuna_batch_1:
 
 # Lote totalmente consumido (depleted)
 honey_batch_depleted:
+  user: regular_user
   food_item: honey
   initial_quantity: 1.0
   current_quantity: 0
@@ -57,6 +62,7 @@ honey_batch_depleted:
 
 # Lote expirado
 milk_batch_expired:
+  user: regular_user
   food_item: expired_milk
   initial_quantity: 1.0
   current_quantity: 1.0
