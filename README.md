@@ -218,6 +218,7 @@ O projeto inclui scripts para facilitar o desenvolvimento com Docker:
 O projeto possui documentação detalhada na pasta `docs/`:
 
 ### Documentação Geral
+- 📝 **[CHANGELOG.md](CHANGELOG.md)** - Histórico de features implementadas
 - 📖 **[API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md)** - Documentação completa da API REST
 - 🏗️ **[IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md)** - Resumo da implementação
 
