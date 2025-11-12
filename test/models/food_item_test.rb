@@ -5,6 +5,7 @@ class FoodItemTest < ActiveSupport::TestCase
   
   test "should be valid with valid attributes" do
     food_item = FoodItem.new(
+      user: regular_user,
       name: "Arroz",
       category: "grains",
       quantity: 5.0,
@@ -15,6 +16,7 @@ class FoodItemTest < ActiveSupport::TestCase
   
   test "should require name" do
     food_item = FoodItem.new(
+      user: regular_user,
       category: "grains",
       quantity: 5.0
     )
@@ -24,6 +26,7 @@ class FoodItemTest < ActiveSupport::TestCase
   
   test "should require name with minimum length" do
     food_item = FoodItem.new(
+      user: regular_user,
       name: "A",
       category: "grains",
       quantity: 5.0
@@ -34,6 +37,7 @@ class FoodItemTest < ActiveSupport::TestCase
   
   test "should not allow name longer than 255 characters" do
     food_item = FoodItem.new(
+      user: regular_user,
       name: "a" * 256,
       category: "grains",
       quantity: 5.0
@@ -44,6 +48,7 @@ class FoodItemTest < ActiveSupport::TestCase
   
   test "should require category" do
     food_item = FoodItem.new(
+      user: regular_user,
       name: "Arroz",
       quantity: 5.0
     )
@@ -53,6 +58,7 @@ class FoodItemTest < ActiveSupport::TestCase
   
   test "should require quantity" do
     food_item = FoodItem.new(
+      user: regular_user,
       name: "Arroz",
       category: "grains"
     )
@@ -62,6 +68,7 @@ class FoodItemTest < ActiveSupport::TestCase
   
   test "should require quantity to be non-negative" do
     food_item = FoodItem.new(
+      user: regular_user,
       name: "Arroz",
       category: "grains",
       quantity: -1.0
@@ -72,6 +79,7 @@ class FoodItemTest < ActiveSupport::TestCase
   
   test "should allow quantity to be zero" do
     food_item = FoodItem.new(
+      user: regular_user,
       name: "Arroz",
       category: "grains",
       quantity: 0
@@ -81,6 +89,7 @@ class FoodItemTest < ActiveSupport::TestCase
   
   test "should not allow storage_location longer than 255 characters" do
     food_item = FoodItem.new(
+      user: regular_user,
       name: "Arroz",
       category: "grains",
       quantity: 5.0,
@@ -92,6 +101,7 @@ class FoodItemTest < ActiveSupport::TestCase
   
   test "should not allow notes longer than 5000 characters" do
     food_item = FoodItem.new(
+      user: regular_user,
       name: "Arroz",
       category: "grains",
       quantity: 5.0,
@@ -103,6 +113,7 @@ class FoodItemTest < ActiveSupport::TestCase
   
   test "should not allow past expiration date" do
     food_item = FoodItem.new(
+      user: regular_user,
       name: "Arroz",
       category: "grains",
       quantity: 5.0,
@@ -114,6 +125,7 @@ class FoodItemTest < ActiveSupport::TestCase
   
   test "should allow today as expiration date" do
     food_item = FoodItem.new(
+      user: regular_user,
       name: "Arroz",
       category: "grains",
       quantity: 5.0,
@@ -124,6 +136,7 @@ class FoodItemTest < ActiveSupport::TestCase
   
   test "should allow nil expiration date" do
     food_item = FoodItem.new(
+      user: regular_user,
       name: "Arroz",
       category: "grains",
       quantity: 5.0,

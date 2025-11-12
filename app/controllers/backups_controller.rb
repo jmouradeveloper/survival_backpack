@@ -47,6 +47,12 @@ class BackupsController < ApplicationController
   
   # POST /backups
   def create
+    unless params[:backup].present?
+      flash.now[:alert] = "Parâmetros inválidos"
+      render :new, status: :unprocessable_entity
+      return
+    end
+    
     strategy = params[:backup][:strategy]&.to_sym || :merge
     
     # Verifica se foi upload de arquivo ou conteúdo direto

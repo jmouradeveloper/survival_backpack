@@ -3,6 +3,8 @@ require "test_helper"
 class NotificationsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @notification = notifications(:one)
+    @user = regular_user
+    sign_in(@user)
   end
 
   test "should get index" do

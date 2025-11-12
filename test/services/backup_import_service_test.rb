@@ -2,7 +2,8 @@ require "test_helper"
 
 class BackupImportServiceTest < ActiveSupport::TestCase
   setup do
-    @service = BackupImportService.new
+    @user = users(:regular_user)
+    @service = BackupImportService.new(@user)
     
     # JSON de teste válido
     @valid_json_data = {
@@ -96,7 +97,7 @@ class BackupImportServiceTest < ActiveSupport::TestCase
   
   test "should import from JSON with replace strategy" do
     # Cria alguns dados existentes
-    FoodItem.create!(name: "Arroz", category: "grains", quantity: 10.0)
+    FoodItem.create!(user: regular_user, name: "Arroz", category: "grains", quantity: 10.0)
     
     initial_count = FoodItem.count
     assert initial_count > 0
@@ -115,6 +116,7 @@ class BackupImportServiceTest < ActiveSupport::TestCase
   test "should merge and avoid duplicates" do
     # Cria um item existente
     existing = FoodItem.create!(
+      user: regular_user,
       name: "Feijão",
       category: "legumes",
       quantity: 3.0,

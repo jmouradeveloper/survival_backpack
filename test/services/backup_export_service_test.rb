@@ -3,7 +3,9 @@ require "test_helper"
 class BackupExportServiceTest < ActiveSupport::TestCase
   setup do
     # Cria dados de teste
+    @user = regular_user
     @food_item = FoodItem.create!(
+      user: @user,
       name: "Arroz",
       category: "grains",
       quantity: 10.0,
@@ -13,6 +15,7 @@ class BackupExportServiceTest < ActiveSupport::TestCase
     )
     
     @supply_batch = SupplyBatch.create!(
+      user: @user,
       food_item: @food_item,
       initial_quantity: 5.0,
       current_quantity: 5.0,
@@ -25,6 +28,7 @@ class BackupExportServiceTest < ActiveSupport::TestCase
     )
     
     @supply_rotation = SupplyRotation.create!(
+      user: @user,
       supply_batch: @supply_batch,
       food_item: @food_item,
       quantity: 2.0,
@@ -34,7 +38,7 @@ class BackupExportServiceTest < ActiveSupport::TestCase
       notes: "Teste de rotação"
     )
     
-    @service = BackupExportService.new
+    @service = BackupExportService.new(@user)
   end
   
   test "should export data to JSON format" do
@@ -49,14 +53,15 @@ class BackupExportServiceTest < ActiveSupport::TestCase
     assert data.key?("supply_batches")
     assert data.key?("supply_rotations")
     
-    assert_equal 1, data["food_items"].length
-    assert_equal @food_item.name, data["food_items"].first["name"]
+    # O serviço exporta apenas os itens do usuário (8 fixtures + 1 criado no setup = 9)
+    assert_equal @user.food_items.count, data["food_items"].length, "Should export all user's food items"
+    assert data["food_items"].any? { |fi| fi["name"] == @food_item.name }, "Should include the created food item"
     
-    assert_equal 1, data["supply_batches"].length
-    assert_equal @supply_batch.batch_code, data["supply_batches"].first["batch_code"]
+    assert_equal @user.supply_batches.count, data["supply_batches"].length, "Should export all user's supply batches"
+    assert data["supply_batches"].any? { |sb| sb["batch_code"] == @supply_batch.batch_code }, "Should include the created batch"
     
-    assert_equal 1, data["supply_rotations"].length
-    assert_equal @supply_rotation.rotation_type, data["supply_rotations"].first["rotation_type"]
+    assert_equal @user.supply_rotations.count, data["supply_rotations"].length, "Should export all user's supply rotations"
+    assert data["supply_rotations"].any? { |sr| sr["rotation_type"] == @supply_rotation.rotation_type }, "Should include the created rotation"
   end
   
   test "should export data to CSV format" do
@@ -94,9 +99,8 @@ class BackupExportServiceTest < ActiveSupport::TestCase
   end
   
   test "should export empty data when no records exist" do
-    FoodItem.destroy_all
-    SupplyBatch.destroy_all
-    SupplyRotation.destroy_all
+    # Remove apenas os dados do usuário
+    @user.food_items.destroy_all
     
     result = @service.export_to_json
     data = JSON.parse(result)
@@ -110,8 +114,8 @@ class BackupExportServiceTest < ActiveSupport::TestCase
     result = @service.export_to_json
     data = JSON.parse(result)
     
-    food_item_data = data["food_items"].first
-    supply_batch_data = data["supply_batches"].first
+    food_item_data = data["food_items"].find { |fi| fi["name"] == @food_item.name }
+    supply_batch_data = data["supply_batches"].find { |sb| sb["batch_code"] == @supply_batch.batch_code }
     supply_rotation_data = data["supply_rotations"].first
     
     assert_equal food_item_data["id"], supply_batch_data["food_item_id"]
@@ -122,7 +126,7 @@ class BackupExportServiceTest < ActiveSupport::TestCase
   test "should export all food item attributes" do
     result = @service.export_to_json
     data = JSON.parse(result)
-    food_item_data = data["food_items"].first
+    food_item_data = data["food_items"].find { |fi| fi["name"] == @food_item.name }
     
     assert_equal @food_item.id, food_item_data["id"]
     assert_equal @food_item.name, food_item_data["name"]

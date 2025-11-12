@@ -4,6 +4,12 @@ require 'json'
 class BackupExportService
   BACKUP_VERSION = "1.0"
   
+  attr_reader :user
+  
+  def initialize(user)
+    @user = user
+  end
+  
   def export_to_json
     data = {
       version: BACKUP_VERSION,
@@ -27,7 +33,7 @@ class BackupExportService
   private
   
   def export_food_items
-    FoodItem.all.map do |food_item|
+    user.food_items.map do |food_item|
       {
         id: food_item.id,
         name: food_item.name,
@@ -43,7 +49,7 @@ class BackupExportService
   end
   
   def export_supply_batches
-    SupplyBatch.all.map do |batch|
+    SupplyBatch.joins(:food_item).where(food_items: { user_id: user.id }).map do |batch|
       {
         id: batch.id,
         food_item_id: batch.food_item_id,
@@ -63,7 +69,7 @@ class BackupExportService
   end
   
   def export_supply_rotations
-    SupplyRotation.all.map do |rotation|
+    SupplyRotation.joins(:food_item).where(food_items: { user_id: user.id }).map do |rotation|
       {
         id: rotation.id,
         supply_batch_id: rotation.supply_batch_id,
@@ -84,7 +90,7 @@ class BackupExportService
       csv << ["id", "name", "category", "quantity", "expiration_date", 
               "storage_location", "notes", "created_at", "updated_at"]
       
-      FoodItem.all.each do |food_item|
+      user.food_items.each do |food_item|
         csv << [
           food_item.id,
           food_item.name,
@@ -106,7 +112,7 @@ class BackupExportService
               "entry_date", "expiration_date", "batch_code", "supplier",
               "unit_cost", "notes", "status", "created_at", "updated_at"]
       
-      SupplyBatch.all.each do |batch|
+      SupplyBatch.joins(:food_item).where(food_items: { user_id: user.id }).each do |batch|
         csv << [
           batch.id,
           batch.food_item_id,
@@ -132,7 +138,7 @@ class BackupExportService
               "rotation_date", "rotation_type", "reason", "notes",
               "created_at", "updated_at"]
       
-      SupplyRotation.all.each do |rotation|
+      SupplyRotation.joins(:food_item).where(food_items: { user_id: user.id }).each do |rotation|
         csv << [
           rotation.id,
           rotation.supply_batch_id,

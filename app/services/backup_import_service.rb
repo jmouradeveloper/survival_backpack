@@ -2,9 +2,10 @@ require 'csv'
 require 'json'
 
 class BackupImportService
-  attr_reader :errors, :warnings
+  attr_reader :errors, :warnings, :user
   
-  def initialize
+  def initialize(user)
+    @user = user
     @errors = []
     @warnings = []
   end
@@ -128,8 +129,8 @@ class BackupImportService
   end
   
   def import_food_item_merge(item_data)
-    # Tenta encontrar item existente pelo nome
-    existing = FoodItem.find_by(name: item_data[:name])
+    # Tenta encontrar item existente pelo nome (no escopo do usuário)
+    existing = user.food_items.find_by(name: item_data[:name])
     
     attributes = extract_food_item_attributes(item_data)
     
@@ -137,7 +138,7 @@ class BackupImportService
       existing.update!(attributes)
       { created: false, record: existing }
     else
-      record = FoodItem.create!(attributes)
+      record = user.food_items.create!(attributes)
       { created: true, record: record }
     end
   rescue ActiveRecord::RecordInvalid => e
@@ -147,7 +148,7 @@ class BackupImportService
   
   def import_food_item_replace(item_data)
     attributes = extract_food_item_attributes(item_data)
-    record = FoodItem.create!(attributes)
+    record = user.food_items.create!(attributes)
     { created: true, record: record }
   rescue ActiveRecord::RecordInvalid => e
     @errors << "Food item inválido: #{e.message}"
@@ -156,6 +157,7 @@ class BackupImportService
   
   def import_supply_batch(batch_data)
     attributes = {
+      user_id: user.id,
       food_item_id: batch_data[:food_item_id],
       initial_quantity: batch_data[:initial_quantity].to_f,
       current_quantity: batch_data[:current_quantity].to_f,
@@ -177,6 +179,7 @@ class BackupImportService
   
   def import_supply_rotation(rotation_data)
     attributes = {
+      user_id: user.id,
       supply_batch_id: rotation_data[:supply_batch_id],
       food_item_id: rotation_data[:food_item_id],
       quantity: rotation_data[:quantity].to_f,
@@ -242,9 +245,11 @@ class BackupImportService
   end
   
   def clear_all_data
-    SupplyRotation.destroy_all
-    SupplyBatch.destroy_all
-    FoodItem.destroy_all
+    # Apenas limpa dados do usuário
+    user_food_item_ids = user.food_items.pluck(:id)
+    SupplyRotation.where(food_item_id: user_food_item_ids).destroy_all
+    SupplyBatch.where(food_item_id: user_food_item_ids).destroy_all
+    user.food_items.destroy_all
   end
   
   def result_hash(success, extra = {})

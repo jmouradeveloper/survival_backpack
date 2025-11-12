@@ -5,12 +5,15 @@ module Api
     class FoodItemsControllerTest < ActionDispatch::IntegrationTest
       setup do
         @food_item = food_items(:rice)
+        @user = regular_user
+        @auth_token = user_api_token
+        @auth_headers = { "Authorization" => "Bearer #{@auth_token}" }
       end
 
       # === TESTES DE INDEX ===
       
       test "should get index as json" do
-        get api_v1_food_items_url, as: :json
+        get api_v1_food_items_url, headers: @auth_headers, as: :json
         assert_response :success
         
         json_response = JSON.parse(@response.body)
@@ -19,7 +22,7 @@ module Api
       end
       
       test "should return paginated results" do
-        get api_v1_food_items_url, as: :json
+        get api_v1_food_items_url, headers: @auth_headers, as: :json
         
         json_response = JSON.parse(@response.body)
         meta = json_response["meta"]
@@ -30,7 +33,7 @@ module Api
       end
       
       test "should accept custom page parameter" do
-        get api_v1_food_items_url, params: { page: 2 }, as: :json
+        get api_v1_food_items_url, params: { page: 2 }, headers: @auth_headers, as: :json
         
         json_response = JSON.parse(@response.body)
         meta = json_response["meta"]
@@ -39,7 +42,7 @@ module Api
       end
       
       test "should accept custom per_page parameter" do
-        get api_v1_food_items_url, params: { per_page: 5 }, as: :json
+        get api_v1_food_items_url, params: { per_page: 5 }, headers: @auth_headers, as: :json
         
         json_response = JSON.parse(@response.body)
         meta = json_response["meta"]
@@ -48,7 +51,7 @@ module Api
       end
       
       test "should limit per_page to maximum 100" do
-        get api_v1_food_items_url, params: { per_page: 200 }, as: :json
+        get api_v1_food_items_url, params: { per_page: 200 }, headers: @auth_headers, as: :json
         
         json_response = JSON.parse(@response.body)
         meta = json_response["meta"]
@@ -57,7 +60,7 @@ module Api
       end
       
       test "should filter by category via API" do
-        get api_v1_food_items_url, params: { category: "grains" }, as: :json
+        get api_v1_food_items_url, params: { category: "grains" }, headers: @auth_headers, as: :json
         assert_response :success
         
         json_response = JSON.parse(@response.body)
@@ -67,7 +70,7 @@ module Api
       end
       
       test "should filter by storage_location via API" do
-        get api_v1_food_items_url, params: { storage_location: "Despensa" }, as: :json
+        get api_v1_food_items_url, params: { storage_location: "Despensa" }, headers: @auth_headers, as: :json
         assert_response :success
         
         json_response = JSON.parse(@response.body)
@@ -77,7 +80,7 @@ module Api
       end
       
       test "should filter expired items via API" do
-        get api_v1_food_items_url, params: { filter: "expired" }, as: :json
+        get api_v1_food_items_url, params: { filter: "expired" }, headers: @auth_headers, as: :json
         assert_response :success
         
         json_response = JSON.parse(@response.body)
@@ -87,7 +90,7 @@ module Api
       end
       
       test "should filter expiring_soon items via API" do
-        get api_v1_food_items_url, params: { filter: "expiring_soon" }, as: :json
+        get api_v1_food_items_url, params: { filter: "expiring_soon" }, headers: @auth_headers, as: :json
         assert_response :success
         
         json_response = JSON.parse(@response.body)
@@ -95,7 +98,7 @@ module Api
       end
       
       test "should filter valid items via API" do
-        get api_v1_food_items_url, params: { filter: "valid" }, as: :json
+        get api_v1_food_items_url, params: { filter: "valid" }, headers: @auth_headers, as: :json
         assert_response :success
         
         json_response = JSON.parse(@response.body)
@@ -105,7 +108,7 @@ module Api
       end
       
       test "should return items in recent order" do
-        get api_v1_food_items_url, as: :json
+        get api_v1_food_items_url, headers: @auth_headers, as: :json
         assert_response :success
         
         json_response = JSON.parse(@response.body)
@@ -118,7 +121,7 @@ module Api
       # === TESTES DE SHOW ===
       
       test "should show food_item via API" do
-        get api_v1_food_item_url(@food_item), as: :json
+        get api_v1_food_item_url(@food_item), headers: @auth_headers, as: :json
         assert_response :success
         
         json_response = JSON.parse(@response.body)
@@ -127,7 +130,7 @@ module Api
       end
       
       test "should include computed fields in show" do
-        get api_v1_food_item_url(@food_item), as: :json
+        get api_v1_food_item_url(@food_item), headers: @auth_headers, as: :json
         
         json_response = JSON.parse(@response.body)
         data = json_response["data"]
@@ -139,7 +142,7 @@ module Api
       end
       
       test "should return 404 for non-existent food_item via API" do
-        get api_v1_food_item_url(id: 99999), as: :json
+        get api_v1_food_item_url(id: 99999), headers: @auth_headers, as: :json
         assert_response :not_found
       rescue ActiveRecord::RecordNotFound
         # Se o RecordNotFound for levantado, está OK também
@@ -159,7 +162,7 @@ module Api
               storage_location: "API Location",
               notes: "Created via API"
             } 
-          }, as: :json
+          }, headers: @auth_headers, as: :json
         end
         
         assert_response :created
@@ -178,7 +181,7 @@ module Api
               category: "test",
               quantity: 10.0
             } 
-          }, as: :json
+          }, headers: @auth_headers, as: :json
         end
         
         assert_response :unprocessable_entity
@@ -196,7 +199,7 @@ module Api
             category: "",  # vazio
             quantity: -1  # negativo
           } 
-        }, as: :json
+        }, headers: @auth_headers, as: :json
         
         assert_response :unprocessable_entity
         
@@ -210,7 +213,7 @@ module Api
             food_item: { 
               name: "Incomplete"
             } 
-          }, as: :json
+          }, headers: @auth_headers, as: :json
         end
         
         assert_response :unprocessable_entity
@@ -224,7 +227,7 @@ module Api
             name: "Updated via API",
             notes: "Updated notes"
           } 
-        }, as: :json
+        }, headers: @auth_headers, as: :json
         
         assert_response :success
         
@@ -244,7 +247,7 @@ module Api
           food_item: { 
             name: "",  # inválido
           } 
-        }, as: :json
+        }, headers: @auth_headers, as: :json
         
         assert_response :unprocessable_entity
         
@@ -261,7 +264,7 @@ module Api
           food_item: { 
             name: "Should Fail"
           } 
-        }, as: :json
+        }, headers: @auth_headers, as: :json
         assert_response :not_found
       rescue ActiveRecord::RecordNotFound
         # Se o RecordNotFound for levantado, está OK também
@@ -276,7 +279,7 @@ module Api
           food_item: { 
             notes: "Only notes updated"
           } 
-        }, as: :json
+        }, headers: @auth_headers, as: :json
         
         @food_item.reload
         assert_equal "Only notes updated", @food_item.notes
@@ -288,7 +291,7 @@ module Api
       
       test "should destroy food_item via API" do
         assert_difference("FoodItem.count", -1) do
-          delete api_v1_food_item_url(@food_item), as: :json
+          delete api_v1_food_item_url(@food_item), headers: @auth_headers, as: :json
         end
         
         assert_response :success
@@ -298,7 +301,7 @@ module Api
       end
       
       test "should return 404 when destroying non-existent food_item via API" do
-        delete api_v1_food_item_url(id: 99999), as: :json
+        delete api_v1_food_item_url(id: 99999), headers: @auth_headers, as: :json
         assert_response :not_found
       rescue ActiveRecord::RecordNotFound
         # Se o RecordNotFound for levantado, está OK também
@@ -308,7 +311,7 @@ module Api
       # === TESTES DE STATISTICS ===
       
       test "should get statistics" do
-        get statistics_api_v1_food_items_url, as: :json
+        get statistics_api_v1_food_items_url, headers: @auth_headers, as: :json
         assert_response :success
         
         json_response = JSON.parse(@response.body)
@@ -323,7 +326,7 @@ module Api
       end
       
       test "statistics should return correct counts" do
-        get statistics_api_v1_food_items_url, as: :json
+        get statistics_api_v1_food_items_url, headers: @auth_headers, as: :json
         
         json_response = JSON.parse(@response.body)
         data = json_response["data"]
@@ -340,7 +343,7 @@ module Api
       end
       
       test "statistics by_category should be a hash" do
-        get statistics_api_v1_food_items_url, as: :json
+        get statistics_api_v1_food_items_url, headers: @auth_headers, as: :json
         
         json_response = JSON.parse(@response.body)
         data = json_response["data"]
@@ -351,7 +354,7 @@ module Api
       end
       
       test "statistics by_storage_location should be a hash" do
-        get statistics_api_v1_food_items_url, as: :json
+        get statistics_api_v1_food_items_url, headers: @auth_headers, as: :json
         
         json_response = JSON.parse(@response.body)
         data = json_response["data"]
@@ -362,7 +365,7 @@ module Api
       # === TESTES DE FORMATO JSON ===
       
       test "API responses should be valid JSON" do
-        get api_v1_food_items_url, as: :json
+        get api_v1_food_items_url, headers: @auth_headers, as: :json
         
         assert_nothing_raised do
           JSON.parse(@response.body)
@@ -370,7 +373,7 @@ module Api
       end
       
       test "API should set correct content type" do
-        get api_v1_food_items_url, as: :json
+        get api_v1_food_items_url, headers: @auth_headers, as: :json
         
         assert_equal "application/json; charset=utf-8", @response.content_type
       end
@@ -387,7 +390,7 @@ module Api
             admin: true,
             created_at: 1.year.ago
           } 
-        }, as: :json
+        }, headers: @auth_headers, as: :json
         
         assert_response :created
         
@@ -402,7 +405,7 @@ module Api
       test "API should include computed fields in response" do
         expired_item = food_items(:expired_milk)
         
-        get api_v1_food_item_url(expired_item), as: :json
+        get api_v1_food_item_url(expired_item), headers: @auth_headers, as: :json
         
         json_response = JSON.parse(@response.body)
         data = json_response["data"]
@@ -416,7 +419,7 @@ module Api
       test "API should correctly compute expiring_soon status" do
         expiring_item = food_items(:beans)
         
-        get api_v1_food_item_url(expiring_item), as: :json
+        get api_v1_food_item_url(expiring_item), headers: @auth_headers, as: :json
         
         json_response = JSON.parse(@response.body)
         data = json_response["data"]
@@ -431,7 +434,7 @@ module Api
       test "API should handle items without expiration date" do
         no_expiration = food_items(:salt)
         
-        get api_v1_food_item_url(no_expiration), as: :json
+        get api_v1_food_item_url(no_expiration), headers: @auth_headers, as: :json
         
         json_response = JSON.parse(@response.body)
         data = json_response["data"]

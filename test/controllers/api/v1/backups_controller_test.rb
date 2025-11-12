@@ -2,7 +2,15 @@ require "test_helper"
 
 class Api::V1::BackupsControllerTest < ActionDispatch::IntegrationTest
   setup do
+    @user = users(:regular_user)
+    @token = @user.api_tokens.create!(
+      name: "Test Token",
+      expires_at: 1.year.from_now
+    )
+    @auth_headers = { "Authorization" => "Bearer #{@token.raw_token}" }
+    
     @food_item = FoodItem.create!(
+      user: @user,
       name: "Arroz",
       category: "grains",
       quantity: 10.0,
@@ -11,13 +19,14 @@ class Api::V1::BackupsControllerTest < ActionDispatch::IntegrationTest
   end
   
   test "should export to json via api" do
-    get api_v1_backups_export_url(format: :json)
+    get api_v1_backups_export_url(format: :json), headers: @auth_headers
     assert_response :success
     
     data = JSON.parse(response.body)
     assert data.key?("version")
     assert data.key?("food_items")
-    assert_equal 1, data["food_items"].length
+    # 8 fixtures + 1 criado no setup = 9 total
+    assert_equal @user.food_items.count, data["food_items"].length, "Should export all current user's food items"
   end
   
   test "should import from json via api with merge strategy" do
@@ -41,6 +50,7 @@ class Api::V1::BackupsControllerTest < ActionDispatch::IntegrationTest
     
     post api_v1_backups_import_url, 
          params: { data: json_data.to_json, strategy: "merge" },
+         headers: @auth_headers,
          as: :json
     
     assert_response :success
@@ -69,6 +79,7 @@ class Api::V1::BackupsControllerTest < ActionDispatch::IntegrationTest
     
     post api_v1_backups_import_url, 
          params: { data: json_data.to_json, strategy: "replace" },
+         headers: @auth_headers,
          as: :json
     
     assert_response :success
@@ -83,6 +94,7 @@ class Api::V1::BackupsControllerTest < ActionDispatch::IntegrationTest
     
     post api_v1_backups_import_url, 
          params: { data: invalid_json, strategy: "merge" },
+         headers: @auth_headers,
          as: :json
     
     assert_response :unprocessable_entity
@@ -106,6 +118,7 @@ class Api::V1::BackupsControllerTest < ActionDispatch::IntegrationTest
     
     post api_v1_backups_import_url, 
          params: { data: json_data.to_json, strategy: "merge" },
+         headers: @auth_headers,
          as: :json
     
     assert_response :success
@@ -116,13 +129,13 @@ class Api::V1::BackupsControllerTest < ActionDispatch::IntegrationTest
   end
   
   test "should validate required params" do
-    post api_v1_backups_import_url, params: {}, as: :json
+    post api_v1_backups_import_url, params: {}, headers: @auth_headers, as: :json
     
     assert_response :unprocessable_entity
   end
   
   test "should handle csv export via api" do
-    get api_v1_backups_export_url(format: :json, export_format: "csv")
+    get api_v1_backups_export_url(format: :json, export_format: "csv"), headers: @auth_headers
     assert_response :success
     
     data = JSON.parse(response.body)

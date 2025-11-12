@@ -3,6 +3,8 @@ require "test_helper"
 class FoodItemsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @food_item = food_items(:rice)
+    @user = regular_user
+    sign_in(@user)
   end
 
   # === TESTES DE INDEX ===

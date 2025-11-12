@@ -54,5 +54,20 @@ module ActionDispatch
       }
       JSON.parse(@response.body)["token"]
     end
+    
+    # Helper para obter o token de API de um usuário
+    def get_api_token(user)
+      token = user.api_tokens.create!(name: "Test Token", expires_at: 30.days.from_now)
+      token.token
+    end
+    
+    # Helper para obter tokens das fixtures
+    def user_api_token
+      "test_user_token_456"
+    end
+    
+    def admin_api_token
+      "test_admin_token_123"
+    end
   end
 end
