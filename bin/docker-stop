@@ -5,7 +5,7 @@ set -e
 
 echo "🛑 Parando a aplicação Survival Backpack..."
 
-# Verificar se docker-compose está instalado
+# Verificar se docker está instalado
 if ! command -v docker &> /dev/null; then
     echo "❌ Docker não está instalado."
     exit 1
@@ -18,11 +18,7 @@ if ! docker ps | grep -q "survival-backpack"; then
 fi
 
 # Parar os containers
-if docker compose version &> /dev/null; then
-    docker compose stop
-else
-    docker-compose stop
-fi
+docker compose stop
 
 echo "✅ Aplicação parada com sucesso!"
 echo ""

@@ -5,7 +5,7 @@ set -e
 
 echo "🧹 Limpando ambiente Docker do Survival Backpack..."
 
-# Verificar se docker-compose está instalado
+# Verificar se docker está instalado
 if ! command -v docker &> /dev/null; then
     echo "❌ Docker não está instalado."
     exit 1
@@ -21,30 +21,18 @@ fi
 
 # Parar e remover containers
 echo "🛑 Parando containers..."
-if docker compose version &> /dev/null; then
-    docker compose down
-else
-    docker-compose down
-fi
+docker compose down
 
 # Remover volumes
 echo "🗑️  Removendo volumes..."
-if docker compose version &> /dev/null; then
-    docker compose down -v
-else
-    docker-compose down -v
-fi
+docker compose down -v
 
 # Remover imagens relacionadas (opcional)
 read -p "Deseja remover também as imagens Docker? (y/N) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "🗑️  Removendo imagens..."
-    if docker compose version &> /dev/null; then
-        docker compose down -v --rmi all
-    else
-        docker-compose down -v --rmi all
-    fi
+    docker compose down -v --rmi all
 fi
 
 # Limpar arquivos temporários locais (opcional)

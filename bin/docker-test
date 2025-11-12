@@ -99,11 +99,7 @@ if [ "$CONTAINER_RUNNING" = false ]; then
     echo "⚠️  Container ${CONTAINER_NAME} não está rodando."
     echo "🚀 Iniciando container temporariamente..."
     
-    if docker compose version &> /dev/null; then
-        docker compose up -d
-    else
-        docker-compose up -d
-    fi
+    docker compose up -d
     
     START_CONTAINER=true
     echo "⏳ Aguardando container iniciar..."
@@ -112,21 +108,14 @@ fi
 
 # Preparar banco de dados de testes (garante que está atualizado)
 echo "🗄️  Sincronizando banco de dados de testes..."
-if docker compose version &> /dev/null; then
-    # Aplicar migrations no ambiente de desenvolvimento (silencioso se já aplicadas)
-    docker compose exec web bin/rails db:migrate 2>&1 | grep -v "migrated" | grep -v "^$" || true
-    # Criar e carregar o schema no banco de testes
-    docker compose exec web bin/rails db:create RAILS_ENV=test 2>&1 | grep -v "already exists" || true
-    docker compose exec web bin/rails db:environment:set RAILS_ENV=test 2>&1 || true
-    docker compose exec web bin/rails db:schema:load RAILS_ENV=test 2>&1 | grep -v "^$" || true
-else
-    # Aplicar migrations no ambiente de desenvolvimento (silencioso se já aplicadas)
-    docker-compose exec web bin/rails db:migrate 2>&1 | grep -v "migrated" | grep -v "^$" || true
-    # Criar e carregar o schema no banco de testes  
-    docker-compose exec web bin/rails db:create RAILS_ENV=test 2>&1 | grep -v "already exists" || true
-    docker-compose exec web bin/rails db:environment:set RAILS_ENV=test 2>&1 || true
-    docker-compose exec web bin/rails db:schema:load RAILS_ENV=test 2>&1 | grep -v "^$" || true
-fi
+# Aplicar migrations no ambiente de desenvolvimento (silencioso se já aplicadas)
+docker compose exec web bin/rails db:migrate 2>&1 | grep -v "migrated" | grep -v "^$" || true
+
+# Criar e carregar o schema no banco de testes
+docker compose exec web bin/rails db:create RAILS_ENV=test 2>&1 | grep -v "already exists" || true
+docker compose exec web bin/rails db:environment:set RAILS_ENV=test 2>&1 || true
+docker compose exec web bin/rails db:schema:load RAILS_ENV=test 2>&1 | grep -v "^$" || true
+
 echo "✅ Banco de testes pronto!"
 echo ""
 
@@ -136,11 +125,7 @@ echo ""
 
 # Executar testes
 EXIT_CODE=0
-if docker compose version &> /dev/null; then
-    docker compose exec web ${TEST_CMD} || EXIT_CODE=$?
-else
-    docker-compose exec web ${TEST_CMD} || EXIT_CODE=$?
-fi
+docker compose exec web ${TEST_CMD} || EXIT_CODE=$?
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -148,11 +133,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 # Parar container se foi iniciado temporariamente
 if [ "$START_CONTAINER" = true ]; then
     echo "🛑 Parando container temporário..."
-    if docker compose version &> /dev/null; then
-        docker compose stop
-    else
-        docker-compose stop
-    fi
+    docker compose stop
 fi
 
 # Exibir resultado

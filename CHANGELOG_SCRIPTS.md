@@ -208,7 +208,7 @@
 3. **Robustez**
    - Verificação de dependências
    - Tratamento de erros
-   - Compatibilidade docker-compose/docker compose
+   - Suporte apenas para `docker compose` (V2)
    - Validação de estado dos containers
 
 4. **Flexibilidade**

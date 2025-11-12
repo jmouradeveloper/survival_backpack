@@ -19,38 +19,22 @@ if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
     echo "Iniciando container temporariamente para limpeza..."
     
     # Iniciar container temporário
-    if docker compose version &> /dev/null; then
-        docker compose up -d
-    else
-        docker-compose up -d
-    fi
+    docker compose up -d
     
     TEMP_START=true
     sleep 3
 fi
 
 echo "🗑️  Limpando tmp/cache/..."
-if docker compose version &> /dev/null; then
-    docker compose exec web rm -rf tmp/cache/*
-else
-    docker-compose exec web rm -rf tmp/cache/*
-fi
+docker compose exec web rm -rf tmp/cache/*
 
 echo "🗑️  Limpando log/*.log..."
-if docker compose version &> /dev/null; then
-    docker compose exec web sh -c "find log -name '*.log' -type f -exec truncate -s 0 {} \;"
-else
-    docker-compose exec web sh -c "find log -name '*.log' -type f -exec truncate -s 0 {} \;"
-fi
+docker compose exec web sh -c "find log -name '*.log' -type f -exec truncate -s 0 {} \;"
 
 # Parar container se foi iniciado temporariamente
 if [ "${TEMP_START}" = "true" ]; then
     echo "🛑 Parando container temporário..."
-    if docker compose version &> /dev/null; then
-        docker compose stop
-    else
-        docker-compose stop
-    fi
+    docker compose stop
 fi
 
 echo ""

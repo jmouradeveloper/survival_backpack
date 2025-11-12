@@ -5,23 +5,20 @@ set -e
 
 echo "🚀 Iniciando a aplicação Survival Backpack via Docker..."
 
-# Verificar se docker e docker-compose estão instalados
+# Verificar se docker está instalado
 if ! command -v docker &> /dev/null; then
     echo "❌ Docker não está instalado. Por favor, instale o Docker primeiro."
     exit 1
 fi
 
-if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
-    echo "❌ Docker Compose não está instalado. Por favor, instale o Docker Compose primeiro."
+# Verificar se docker compose está disponível
+if ! docker compose version &> /dev/null; then
+    echo "❌ Docker Compose não está disponível. Por favor, atualize o Docker para uma versão que suporte 'docker compose'."
     exit 1
 fi
 
 # Subir os containers
-if docker compose version &> /dev/null; then
-    docker compose up -d
-else
-    docker-compose up -d
-fi
+docker compose up -d
 
 echo "✅ Aplicação iniciada com sucesso!"
 echo "📍 Acesse a aplicação em: http://localhost:3000"

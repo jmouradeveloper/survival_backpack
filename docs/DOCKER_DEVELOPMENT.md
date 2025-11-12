@@ -6,7 +6,7 @@ Esta aplicação Ruby on Rails está configurada para rodar com Docker Compose V
 
 ### Pré-requisitos
 
-- Docker (versão 20.10 ou superior com Docker Compose V2 integrado)
+- Docker (versão 20.10+ com suporte a `docker compose`)
 
 ### Comandos Básicos
 

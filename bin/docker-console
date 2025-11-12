@@ -22,9 +22,5 @@ echo "💡 Para sair, digite 'exit' ou pressione Ctrl+D"
 echo ""
 
 # Acessar o console Rails
-if docker compose version &> /dev/null; then
-    docker compose exec web bin/rails console
-else
-    docker-compose exec web bin/rails console
-fi
+docker compose exec web bin/rails console
 

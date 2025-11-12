@@ -59,9 +59,5 @@ echo "🚀 Executando comando no container: $*"
 echo ""
 
 # Executar o comando no container
-if docker compose version &> /dev/null; then
-    docker compose exec web "$@"
-else
-    docker-compose exec web "$@"
-fi
+docker compose exec web "$@"
 

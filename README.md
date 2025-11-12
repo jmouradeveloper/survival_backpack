@@ -86,8 +86,7 @@ Ideal para famílias ou qualquer pessoa que queira otimizar o controle de alimen
 - SQLite3
 
 ### Desenvolvimento com Docker (Recomendado)
-- Docker
-- Docker Compose
+- Docker (versão 20.10+ com suporte a `docker compose`)
 
 ## 🔧 Instalação
 

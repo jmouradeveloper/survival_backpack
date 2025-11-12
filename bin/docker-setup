@@ -5,14 +5,15 @@ set -e
 
 echo "🔧 Configurando ambiente Docker para Survival Backpack..."
 
-# Verificar se docker e docker-compose estão instalados
+# Verificar se docker está instalado
 if ! command -v docker &> /dev/null; then
     echo "❌ Docker não está instalado. Por favor, instale o Docker primeiro."
     exit 1
 fi
 
-if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
-    echo "❌ Docker Compose não está instalado. Por favor, instale o Docker Compose primeiro."
+# Verificar se docker compose está disponível
+if ! docker compose version &> /dev/null; then
+    echo "❌ Docker Compose não está disponível. Por favor, atualize o Docker para uma versão que suporte 'docker compose'."
     exit 1
 fi
 
@@ -22,19 +23,11 @@ mkdir -p storage log tmp
 
 # Buildar a imagem
 echo "🏗️  Buildando a imagem Docker..."
-if docker compose version &> /dev/null; then
-    docker compose build
-else
-    docker-compose build
-fi
+docker compose build
 
 # Subir os containers
 echo "🚀 Iniciando os containers..."
-if docker compose version &> /dev/null; then
-    docker compose up -d
-else
-    docker-compose up -d
-fi
+docker compose up -d
 
 # Aguardar um momento para os containers iniciarem
 echo "⏳ Aguardando containers iniciarem..."
@@ -42,23 +35,21 @@ sleep 5
 
 # Preparar o banco de dados de desenvolvimento
 echo "🗄️  Preparando banco de dados de desenvolvimento..."
-if docker compose version &> /dev/null; then
-    docker compose exec web bin/rails db:prepare
-else
-    docker-compose exec web bin/rails db:prepare
+# Tentar preparar o banco, se falhar, resetar completamente
+if ! docker compose exec web bin/rails db:prepare 2>/dev/null; then
+    echo "⚠️  Detectado problema com banco existente. Resetando banco de dados..."
+    docker compose exec web bin/rails db:drop 2>/dev/null || true
+    docker compose exec web bin/rails db:create
+    docker compose exec web bin/rails db:migrate
 fi
 
 # Preparar o banco de dados de testes
 echo "🧪 Preparando banco de dados de testes..."
-if docker compose version &> /dev/null; then
-    docker compose exec web bin/rails db:create RAILS_ENV=test
-    docker compose exec web bin/rails db:environment:set RAILS_ENV=test
-    docker compose exec web bin/rails db:schema:load RAILS_ENV=test
-else
-    docker-compose exec web bin/rails db:create RAILS_ENV=test
-    docker-compose exec web bin/rails db:environment:set RAILS_ENV=test
-    docker-compose exec web bin/rails db:schema:load RAILS_ENV=test
-fi
+# Remover arquivo físico do banco de teste para evitar conflitos de environment
+docker compose exec web rm -f storage/test.sqlite3 storage/test.sqlite3-shm storage/test.sqlite3-wal
+docker compose exec web bin/rails db:create RAILS_ENV=test
+docker compose exec web bin/rails db:environment:set RAILS_ENV=test
+docker compose exec web bin/rails db:migrate RAILS_ENV=test
 
 echo ""
 echo "✅ Setup concluído com sucesso!"
