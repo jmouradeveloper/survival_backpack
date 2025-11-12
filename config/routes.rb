@@ -48,6 +48,13 @@ Rails.application.routes.draw do
     post :test_notification
   end
 
+  # Rotas Web - Backups
+  resources :backups, only: [:index, :new, :create] do
+    collection do
+      get :export
+    end
+  end
+
   # API Routes
   namespace :api do
     namespace :v1 do
@@ -90,6 +97,10 @@ Rails.application.routes.draw do
         post :subscribe_push
         delete :unsubscribe_push
       end
+
+      # API - Backups
+      get 'backups/export', to: 'backups#export'
+      post 'backups/import', to: 'backups#import'
     end
   end
 

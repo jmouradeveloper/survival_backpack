@@ -1,0 +1,232 @@
+<div class="backups-page">
+  <div class="page-header">
+    <h2>💾 Backup de Dados</h2>
+  </div>
+
+  <div class="backup-sections">
+    <!-- Seção de Exportação -->
+    <div class="backup-section export-section">
+      <h3>📤 Exportar Dados</h3>
+      <p>Faça o download de todos os seus dados em formato JSON ou CSV.</p>
+      
+      <div class="export-buttons">
+        <%= link_to export_backups_path(format: :json, download: true), 
+            class: "btn btn-primary", 
+            data: { turbo: false } do %>
+          📥 Exportar JSON
+        <% end %>
+        
+        <%= link_to export_backups_path(format: :csv, download: true), 
+            class: "btn btn-secondary", 
+            data: { turbo: false } do %>
+          📥 Exportar CSV (ZIP)
+        <% end %>
+      </div>
+      
+      <div class="export-info">
+        <h4>O que será exportado:</h4>
+        <ul>
+          <li>Todos os alimentos cadastrados</li>
+          <li>Todos os lotes de suprimentos (FIFO)</li>
+          <li>Todas as rotações de estoque</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Seção de Importação -->
+    <div class="backup-section import-section">
+      <h3>📥 Importar Dados</h3>
+      <p>Restaure seus dados a partir de um arquivo de backup JSON ou CSV.</p>
+      
+      <%= link_to "Importar Backup", new_backup_path, class: "btn btn-primary" %>
+      
+      <div class="import-info">
+        <h4>Estratégias de importação:</h4>
+        <ul>
+          <li><strong>Mesclar:</strong> Adiciona novos dados aos existentes</li>
+          <li><strong>Substituir:</strong> Apaga todos os dados e importa os novos</li>
+        </ul>
+        
+        <div class="alert alert-warning">
+          <strong>⚠️ Atenção:</strong> A estratégia "Substituir" apagará todos os dados existentes!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Informações Gerais -->
+  <div class="backup-info-panel">
+    <h3>ℹ️ Informações</h3>
+    
+    <div class="info-grid">
+      <div class="info-item">
+        <strong>Formato JSON:</strong>
+        <p>Arquivo único com todos os dados em formato estruturado</p>
+      </div>
+      
+      <div class="info-item">
+        <strong>Formato CSV:</strong>
+        <p>Arquivo ZIP contendo 3 arquivos CSV (alimentos, lotes, rotações)</p>
+      </div>
+      
+      <div class="info-item">
+        <strong>Backup Manual:</strong>
+        <p>Recomenda-se fazer backups periódicos dos seus dados</p>
+      </div>
+      
+      <div class="info-item">
+        <strong>Segurança:</strong>
+        <p>Guarde os arquivos de backup em local seguro</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.backups-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.backup-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.backup-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.backup-section h3 {
+  margin-top: 0;
+  color: #2563eb;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.export-info,
+.import-info {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.export-info h4,
+.import-info h4 {
+  margin-top: 0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: #666;
+}
+
+.export-info ul,
+.import-info ul {
+  margin: 0.5rem 0 0 0;
+  padding-left: 1.5rem;
+}
+
+.export-info li,
+.import-info li {
+  margin: 0.5rem 0;
+}
+
+.backup-info-panel {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-top: 2rem;
+}
+
+.backup-info-panel h3 {
+  margin-top: 0;
+  color: #2563eb;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.info-item {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.info-item strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #2563eb;
+}
+
+.info-item p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.alert-warning {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+}
+
+@media (max-width: 768px) {
+  .backup-sections {
+    grid-template-columns: 1fr;
+  }
+  
+  .export-buttons {
+    flex-direction: column;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+

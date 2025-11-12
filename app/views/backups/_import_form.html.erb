@@ -1,0 +1,189 @@
+<%= form_with scope: :backup, url: backups_path, method: :post, multipart: true, local: true do |f| %>
+  
+  <div class="form-group">
+    <%= f.label :file, "Arquivo de Backup", class: "form-label" %>
+    <%= f.file_field :file, 
+        accept: ".json,.csv,.zip",
+        class: "form-control",
+        required: true,
+        data: { action: "change->backup#fileSelected" } %>
+    <small class="form-text">
+      Formatos aceitos: JSON, CSV, ZIP
+    </small>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :strategy, "Estratégia de Importação", class: "form-label" %>
+    
+    <div class="radio-group">
+      <div class="radio-option">
+        <%= f.radio_button :strategy, "merge", checked: true, class: "form-radio" %>
+        <%= f.label :strategy_merge, class: "radio-label" do %>
+          <strong>Mesclar</strong>
+          <span class="radio-description">
+            Adiciona novos dados aos existentes. Itens duplicados serão atualizados.
+          </span>
+        <% end %>
+      </div>
+
+      <div class="radio-option">
+        <%= f.radio_button :strategy, "replace", class: "form-radio" %>
+        <%= f.label :strategy_replace, class: "radio-label" do %>
+          <strong>Substituir</strong>
+          <span class="radio-description danger">
+            ⚠️ Remove todos os dados existentes e importa apenas os novos.
+          </span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>💡 Dica:</strong> Use "Mesclar" para adicionar dados sem perder os existentes. 
+    Use "Substituir" apenas se quiser começar do zero com os dados do backup.
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit "Importar Backup", class: "btn btn-primary" %>
+    <%= link_to "Cancelar", backups_path, class: "btn btn-secondary" %>
+  </div>
+
+<% end %>
+
+<style>
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-text {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.radio-option:has(input:checked) {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.form-radio {
+  margin-top: 0.25rem;
+  margin-right: 0.75rem;
+}
+
+.radio-label {
+  flex: 1;
+  cursor: pointer;
+}
+
+.radio-label strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #2563eb;
+}
+
+.radio-description {
+  display: block;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.radio-description.danger {
+  color: #dc2626;
+}
+
+.alert-info {
+  background: #dbeafe;
+  border: 1px solid #3b82f6;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1.5rem 0;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+}
+
+.btn-link {
+  background: none;
+  color: #2563eb;
+  padding: 0.5rem 1rem;
+}
+
+.btn-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+}
+</style>
+

@@ -1,0 +1,26 @@
+<div class="import-page">
+  <div class="page-header">
+    <h2>📥 Importar Backup</h2>
+    <%= link_to "← Voltar", backups_path, class: "btn btn-link" %>
+  </div>
+
+  <div class="import-container">
+    <%= render 'import_form' %>
+  </div>
+</div>
+
+<style>
+.import-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.import-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-top: 2rem;
+}
+</style>
+

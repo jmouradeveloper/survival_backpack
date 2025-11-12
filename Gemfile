@@ -23,6 +23,12 @@ gem "webpush"
 # Pagination [https://github.com/kaminari/kaminari]
 gem "kaminari"
 
+# ZIP file handling [https://github.com/rubyzip/rubyzip]
+gem "rubyzip"
+
+# CSV handling (not included by default in Ruby 3.4+)
+gem "csv"
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
