@@ -2,10 +2,11 @@ import { Controller } from "@hotwired/stimulus"
 
 // Conecta ao data-controller="notifications"
 export default class extends Controller {
-  static targets = ["badge", "list", "permission", "browserPermission", "permissionAction", "pushStatus", "pushAction"]
+  static targets = ["badge", "list", "permission", "browserPermission", "permissionAction", "pushStatus", "pushAction", "permissionModal", "modalBackdrop"]
   static values = {
     refreshInterval: { type: Number, default: 60000 }, // 1 minuto
-    checkPermission: { type: Boolean, default: true }
+    checkPermission: { type: Boolean, default: true },
+    autoShowModal: { type: Boolean, default: true }
   }
 
   connect() {
@@ -20,6 +21,11 @@ export default class extends Controller {
       this.updateBrowserPermissionStatus()
     }
     
+    // Mostrar modal proativamente se necessário
+    if (this.autoShowModalValue) {
+      this.checkAndShowPermissionModal()
+    }
+    
     this.startPolling()
     this.updateUnreadCount()
     this.registerServiceWorker()
@@ -28,6 +34,151 @@ export default class extends Controller {
   disconnect() {
     this.stopPolling()
   }
+
+  // ==================== MODAL PROATIVO ====================
+
+  checkAndShowPermissionModal() {
+    // Verificar se o navegador suporta notificações
+    if (!("Notification" in window)) {
+      console.log("Este navegador não suporta notificações")
+      return
+    }
+
+    // Verificar se a permissão já foi concedida ou negada
+    if (Notification.permission !== "default") {
+      console.log("Permissão já foi respondida:", Notification.permission)
+      return
+    }
+
+    // Verificar se o usuário já clicou em "Mais Tarde" recentemente
+    const dismissedAt = localStorage.getItem('notification-permission-dismissed-at')
+    if (dismissedAt) {
+      const dismissedDate = new Date(dismissedAt)
+      const hoursSinceDismissed = (Date.now() - dismissedDate.getTime()) / (1000 * 60 * 60)
+      
+      // Mostrar novamente apenas após 24 horas
+      if (hoursSinceDismissed < 24) {
+        console.log("Modal já foi dispensado recentemente")
+        return
+      }
+    }
+
+    // Verificar se o usuário já viu o modal nesta sessão
+    if (sessionStorage.getItem('notification-modal-shown')) {
+      console.log("Modal já foi mostrado nesta sessão")
+      return
+    }
+
+    // Mostrar o modal após um pequeno delay para melhor UX
+    setTimeout(() => {
+      this.showPermissionModal()
+    }, 1000) // 1 segundo de delay
+  }
+
+  showPermissionModal() {
+    if (!this.hasPermissionModalTarget) {
+      console.log("Modal target não encontrado")
+      return
+    }
+
+    // Marcar que o modal foi mostrado nesta sessão
+    sessionStorage.setItem('notification-modal-shown', 'true')
+
+    // Mostrar modal e backdrop
+    this.permissionModalTarget.classList.add('show')
+    if (this.hasModalBackdropTarget) {
+      this.modalBackdropTarget.classList.add('show')
+    }
+
+    // Prevenir scroll do body
+    document.body.style.overflow = 'hidden'
+
+    console.log("Modal de permissão mostrado")
+  }
+
+  hidePermissionModal() {
+    if (!this.hasPermissionModalTarget) return
+
+    // Esconder modal e backdrop
+    this.permissionModalTarget.classList.remove('show')
+    if (this.hasModalBackdropTarget) {
+      this.modalBackdropTarget.classList.remove('show')
+    }
+
+    // Restaurar scroll do body
+    document.body.style.overflow = ''
+
+    console.log("Modal de permissão escondido")
+  }
+
+  async requestPermissionFromModal(event) {
+    event.preventDefault()
+    
+    if (!('Notification' in window)) {
+      alert("❌ Este navegador não suporta notificações.")
+      this.hidePermissionModal()
+      return
+    }
+
+    try {
+      const permission = await Notification.requestPermission()
+      
+      // Atualizar status na interface
+      this.updateBrowserPermissionStatus()
+      
+      if (permission === "granted") {
+        console.log("Permissão de notificação concedida")
+        
+        // Registrar para push notifications
+        await this.subscribeToPush()
+        
+        // Mostrar notificação de confirmação
+        this.showTestNotification()
+        
+        // Esconder modal
+        this.hidePermissionModal()
+        
+        // Mostrar mensagem de sucesso
+        alert("✅ Permissões concedidas com sucesso!\n\nAgora você receberá notificações sobre a validade dos seus alimentos.")
+      } else if (permission === "denied") {
+        this.hidePermissionModal()
+        alert("❌ Permissão negada.\n\nPara ativar as notificações, você precisará alterar as configurações do navegador manualmente.")
+      } else {
+        this.hidePermissionModal()
+        alert("⚠️ Permissão não concedida.\n\nVocê pode tentar novamente quando desejar receber notificações.")
+      }
+    } catch (error) {
+      console.error("Erro ao solicitar permissão:", error)
+      this.hidePermissionModal()
+      alert("❌ Erro ao solicitar permissão. Tente novamente.")
+    }
+  }
+
+  dismissPermissionModal(event) {
+    event.preventDefault()
+    
+    // Registrar que o usuário clicou em "Mais Tarde"
+    localStorage.setItem('notification-permission-dismissed-at', new Date().toISOString())
+    
+    // Esconder modal
+    this.hidePermissionModal()
+    
+    console.log("Modal dispensado pelo usuário")
+  }
+
+  // Alias para dismissPermissionModal (compatibilidade com diferentes nomes no HTML)
+  closePermissionModal(event) {
+    this.dismissPermissionModal(event)
+  }
+
+  closeModalOnBackdrop(event) {
+    // Fechar modal se clicar no backdrop (fundo escuro)
+    if (event.target === event.currentTarget) {
+      this.dismissPermissionModal(event)
+    }
+  }
+
+  // ==================== FIM MODAL PROATIVO ====================
 
   async checkNotificationPermission() {
     if (!("Notification" in window)) {

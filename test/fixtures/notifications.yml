@@ -1,0 +1,67 @@
+# Fixtures para Notification
+
+# Notificação não lida - alta prioridade
+one:
+  food_item: beans
+  title: "🔴 Feijão Preto vence em breve!"
+  body: "Este alimento vence em 5 dias."
+  notification_type: "expiration_warning"
+  read: false
+  priority: 2
+  sent_at: <%= Time.current %>
+  scheduled_for: <%= Time.current %>
+  created_at: <%= 1.hour.ago %>
+  updated_at: <%= 1.hour.ago %>
+
+# Notificação lida - prioridade média
+two:
+  food_item: chocolate
+  title: "🟡 Chocolate 70% vence em breve"
+  body: "Este alimento vence em 7 dias."
+  notification_type: "expiration_warning"
+  read: true
+  priority: 1
+  sent_at: <%= 1.day.ago %>
+  scheduled_for: <%= 1.day.ago %>
+  created_at: <%= 2.days.ago %>
+  updated_at: <%= 1.day.ago %>
+
+# Notificação não lida - urgente
+three:
+  food_item: expired_milk
+  title: "🔴 Leite em Pó expirado!"
+  body: "Atenção! Este alimento está expirado."
+  notification_type: "expired"
+  read: false
+  priority: 2
+  sent_at: <%= 5.days.ago %>
+  scheduled_for: <%= 5.days.ago %>
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>
+
+# Notificação não lida - prioridade baixa
+four:
+  food_item: rice
+  title: "📅 Arroz Integral vence em 30 dias"
+  body: "Este alimento vence em 30 dias."
+  notification_type: "expiration_warning"
+  read: false
+  priority: 0
+  sent_at: <%= Time.current %>
+  scheduled_for: <%= Time.current %>
+  created_at: <%= 30.minutes.ago %>
+  updated_at: <%= 30.minutes.ago %>
+
+# Notificação agendada para o futuro
+five:
+  food_item: canned_tuna
+  title: "📅 Atum em Lata vence em 180 dias"
+  body: "Este alimento vence em 180 dias."
+  notification_type: "expiration_warning"
+  read: false
+  priority: 0
+  sent_at: <%= nil %>
+  scheduled_for: <%= 1.day.from_now %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
