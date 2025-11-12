@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Script para executar comandos arbitrários no container Docker
+# Uso: bin/docker-exec [comando e argumentos]
+# Exemplo: bin/docker-exec bin/rails db:migrate
+# Exemplo: bin/docker-exec bin/rubocop
+# Exemplo: bin/docker-exec ls -la app/models
+
+set -e
+
+# Verificar se docker está instalado
+if ! command -v docker &> /dev/null; then
+    echo "❌ Docker não está instalado."
+    exit 1
+fi
+
+# Verificar se o container está rodando
+CONTAINER_NAME="survival_backpack_web"
+if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    echo "❌ Container ${CONTAINER_NAME} não está rodando."
+    echo "Execute primeiro: bin/docker-up"
+    exit 1
+fi
+
+# Função para mostrar ajuda
+show_help() {
+    echo "🐳 Docker Exec - Executa comandos no container"
+    echo ""
+    echo "Uso: bin/docker-exec [comando e argumentos]"
+    echo ""
+    echo "Opções:"
+    echo "  -h, --help    Mostrar esta ajuda"
+    echo ""
+    echo "Exemplos:"
+    echo "  bin/docker-exec bin/rails db:migrate"
+    echo "  bin/docker-exec bin/rails db:seed"
+    echo "  bin/docker-exec bin/rubocop"
+    echo "  bin/docker-exec bin/brakeman"
+    echo "  bin/docker-exec ls -la app/models"
+    echo "  bin/docker-exec bundle install"
+    echo "  bin/docker-exec bin/rails generate model User"
+    echo ""
+}
+
+# Verificar se foi solicitada ajuda
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    show_help
+    exit 0
+fi
+
+# Verificar se foi passado algum comando
+if [ $# -eq 0 ]; then
+    echo "❌ Nenhum comando foi especificado."
+    echo ""
+    show_help
+    exit 1
+fi
+
+echo "🚀 Executando comando no container: $*"
+echo ""
+
+# Executar o comando no container
+if docker compose version &> /dev/null; then
+    docker compose exec web "$@"
+else
+    docker-compose exec web "$@"
+fi
+

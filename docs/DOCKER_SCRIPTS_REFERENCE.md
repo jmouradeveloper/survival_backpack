@@ -208,7 +208,68 @@ Todos os scripts Docker estão localizados em `bin/` e seguem o padrão `docker-
 
 ---
 
-### 6. docker-console
+### 6. docker-exec
+**Função:** Executa comandos arbitrários no container Docker
+
+**Uso:**
+```bash
+./bin/docker-exec [comando e argumentos]
+```
+
+**Exemplos:**
+```bash
+# Executar migrations
+./bin/docker-exec bin/rails db:migrate
+
+# Executar seed
+./bin/docker-exec bin/rails db:seed
+
+# Executar Rubocop
+./bin/docker-exec bin/rubocop
+
+# Executar Brakeman
+./bin/docker-exec bin/brakeman
+
+# Instalar gems
+./bin/docker-exec bundle install
+
+# Gerar models
+./bin/docker-exec bin/rails generate model User name:string
+
+# Listar arquivos
+./bin/docker-exec ls -la app/models
+
+# Executar rake tasks
+./bin/docker-exec bin/rails db:rollback
+
+# Qualquer comando shell
+./bin/docker-exec pwd
+```
+
+**O que faz:**
+1. ✅ Verifica se container está rodando
+2. ✅ Executa o comando fornecido dentro do container
+3. ✅ Passa todos os argumentos corretamente
+4. ✅ Retorna código de saída do comando
+
+**Quando usar:**
+- Executar comandos Rails arbitrários
+- Rodar migrations ou seeds
+- Executar linters (rubocop, brakeman)
+- Gerar código (models, controllers, migrations)
+- Instalar dependências
+- Executar scripts customizados
+- Qualquer comando que precise rodar no container
+
+**Vantagens:**
+- ✅ Versátil e genérico
+- ✅ Suporta qualquer comando
+- ✅ Passa argumentos corretamente
+- ✅ Interface simples e intuitiva
+
+---
+
+### 7. docker-console
 **Função:** Abre console Rails dentro do container
 
 **Uso:**
@@ -247,7 +308,7 @@ Rails.cache.clear
 
 ---
 
-### 7. docker-clean-cache
+### 8. docker-clean-cache
 **Função:** Limpa cache e logs usando o próprio container (evita problemas de permissão)
 
 **Uso:**
@@ -274,7 +335,7 @@ Rails.cache.clear
 
 ---
 
-### 8. docker-clean
+### 9. docker-clean
 **Função:** Limpeza completa de containers, volumes e imagens
 
 **Uso:**
@@ -327,6 +388,12 @@ Deseja usar sudo para remover esses arquivos? (y/N)
 
 # Durante o dia - Monitorar
 ./bin/docker-logs -n 50
+
+# Durante o dia - Executar migrations
+./bin/docker-exec bin/rails db:migrate
+
+# Durante o dia - Executar linters
+./bin/docker-exec bin/rubocop
 
 # Durante o dia - Testar mudanças
 ./bin/docker-test --models
@@ -466,8 +533,11 @@ docker ps
 docker compose build
 
 # Rodar migrations
+./bin/docker-exec bin/rails db:migrate
+
+# Ou via console se precisar
 ./bin/docker-console
-rails db:migrate
+# > rails db:migrate
 ```
 
 ### Espaço em disco cheio
@@ -493,6 +563,7 @@ docker image prune -a
 | `docker-stop` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | `docker-logs` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | `docker-test` | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ |
+| `docker-exec` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | `docker-console` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | `docker-clean-cache` | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | `docker-clean` | ✅ | ✅ | 🟡 Opcional | 🟡 Opcional | ❌ | ✅ |
@@ -513,6 +584,7 @@ alias dup='./bin/docker-up'
 alias dstop='./bin/docker-stop'
 alias dlogs='./bin/docker-logs'
 alias dtest='./bin/docker-test'
+alias dexec='./bin/docker-exec'
 alias dconsole='./bin/docker-console'
 ```
 

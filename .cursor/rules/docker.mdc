@@ -76,6 +76,14 @@ rails db:reset
 
 ### ✅ SEMPRE faça isto:
 ```bash
+bin/docker-exec bin/rails db:migrate
+bin/docker-exec bin/rails db:seed
+bin/docker-exec bin/rails db:rollback
+bin/docker-exec bin/rails db:reset
+bin/docker-exec bin/rails db:create
+bin/docker-exec bin/rails db:drop
+
+# Ou usando docker compose diretamente
 docker compose exec web bin/rails db:migrate
 docker compose exec web bin/rails db:seed
 docker compose exec web bin/rails db:rollback
@@ -97,6 +105,11 @@ rails generate migration AddFieldToTable
 
 ### ✅ SEMPRE faça isto:
 ```bash
+bin/docker-exec bin/rails generate model User
+bin/docker-exec bin/rails generate controller Users
+bin/docker-exec bin/rails generate migration AddFieldToTable
+
+# Ou usando docker compose diretamente
 docker compose exec web bin/rails generate model User
 docker compose exec web bin/rails generate controller Users
 docker compose exec web bin/rails generate migration AddFieldToTable
@@ -116,6 +129,9 @@ gem install [gem_name]
 ### ✅ SEMPRE faça isto:
 ```bash
 # Instalar gems
+bin/docker-exec bundle install
+
+# Ou usando docker compose diretamente
 docker compose exec web bundle install
 
 # Após adicionar gems no Gemfile, reconstruir a imagem
@@ -138,6 +154,10 @@ bundle exec rubocop
 
 ### ✅ SEMPRE faça isto:
 ```bash
+bin/docker-exec bin/rubocop
+bin/docker-exec bin/brakeman
+
+# Ou usando docker compose diretamente
 docker compose exec web bin/rubocop
 docker compose exec web bin/brakeman
 ```
@@ -153,6 +173,7 @@ Os seguintes scripts estão disponíveis no diretório `bin/`:
 | `bin/docker-up` | Iniciar containers do projeto |
 | `bin/docker-stop` | Parar containers |
 | `bin/docker-test` | Executar testes automatizados |
+| `bin/docker-exec` | Executar comandos arbitrários no container |
 | `bin/docker-console` | Acessar console Rails |
 | `bin/docker-logs` | Ver logs dos containers |
 | `bin/docker-setup` | Setup inicial do projeto (primeira vez) |
@@ -208,11 +229,12 @@ Quando o usuário pedir:
 - **"Testar o modelo X"** → Sugira: `bin/docker-test --file test/models/x_test.rb`
 - **"Testar controllers"** → Sugira: `bin/docker-test --controllers`
 - **"Abrir console"** → Sugira: `bin/docker-console`
-- **"Rodar migrations"** → Sugira: `docker compose exec web bin/rails db:migrate`
-- **"Criar migration"** → Sugira: `docker compose exec web bin/rails generate migration NomeMigration`
-- **"Instalar gems"** → Sugira: `docker compose exec web bundle install && docker compose build web`
+- **"Rodar migrations"** → Sugira: `bin/docker-exec bin/rails db:migrate`
+- **"Criar migration"** → Sugira: `bin/docker-exec bin/rails generate migration NomeMigration`
+- **"Instalar gems"** → Sugira: `bin/docker-exec bundle install && docker compose build web`
 - **"Ver logs"** → Sugira: `bin/docker-logs`
-- **"Resetar banco"** → Sugira: `docker compose exec web bin/rails db:reset`
+- **"Resetar banco"** → Sugira: `bin/docker-exec bin/rails db:reset`
+- **"Executar comando no container"** → Sugira: `bin/docker-exec [comando]`
 
 ---
 
