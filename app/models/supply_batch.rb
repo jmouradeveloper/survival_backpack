@@ -50,6 +50,10 @@ class SupplyBatch < ApplicationRecord
   end
   
   # Métodos de instância
+  def active?
+    status == 'active'
+  end
+  
   def expired?
     expiration_date.present? && expiration_date < Date.today
   end
