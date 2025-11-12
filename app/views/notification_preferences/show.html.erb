@@ -140,6 +140,12 @@
             method: :post,
             class: "btn btn-secondary" %>
         
+        <button type="button" 
+                class="btn btn-secondary"
+                data-action="click->pwa-guide#show">
+          📱 Ver Guia de Instalação e Modo Offline
+        </button>
+        
         <% if @preference.push_notifications_enabled? %>
           <%= button_to "🔕 Desabilitar Push Notifications", 
               unsubscribe_push_notification_preferences_path,

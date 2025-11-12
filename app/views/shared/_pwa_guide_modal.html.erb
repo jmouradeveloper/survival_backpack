@@ -1,0 +1,118 @@
+<div class="modal-overlay hidden" data-pwa-guide-target="modal" data-action="click->pwa-guide#close">
+  <div class="modal-content pwa-guide-modal" data-action="click->pwa-guide#stopPropagation">
+    <div class="modal-header">
+      <h3>📱 App Instalado e Pronto para Usar Offline!</h3>
+      <a href="#" class="modal-close" data-action="click->pwa-guide#dismiss">&times;</a>
+    </div>
+
+    <div class="modal-body">
+      <!-- Welcome Section -->
+      <div class="pwa-guide-section">
+        <h4>🎉 Bem-vindo ao Survival Backpack!</h4>
+        <p>
+          Seu aplicativo está configurado e pronto para funcionar <strong>mesmo sem internet</strong>.
+          O service worker está ativo e cacheando seus dados automaticamente.
+        </p>
+      </div>
+
+      <!-- Offline Capabilities -->
+      <div class="pwa-guide-section">
+        <h4>🔌 O Que Funciona Offline</h4>
+        <ul class="pwa-guide-list">
+          <li><span class="icon">✅</span> Visualizar lista de alimentos já carregados</li>
+          <li><span class="icon">✅</span> Ver detalhes dos alimentos visitados</li>
+          <li><span class="icon">✅</span> Navegar entre páginas já visitadas</li>
+          <li><span class="icon">✅</span> Receber notificações de vencimento</li>
+          <li><span class="icon">✅</span> Consultar lotes e rotações FIFO em cache</li>
+        </ul>
+        <div class="pwa-guide-note">
+          <strong>Nota:</strong> Criar, editar ou deletar itens requer conexão com internet.
+          Quando você voltar online, tudo sincroniza automaticamente!
+        </div>
+      </div>
+
+      <!-- Installation Instructions -->
+      <div class="pwa-guide-section">
+        <h4>📲 Como Instalar como App Nativo</h4>
+        <p>Para uma experiência ainda melhor, instale o app na sua tela inicial:</p>
+
+        <!-- Tab Navigation -->
+        <div class="pwa-guide-tabs">
+          <button class="pwa-guide-tab active" data-tab="ios" data-action="click->pwa-guide#switchTab">
+            🍎 iOS/Safari
+          </button>
+          <button class="pwa-guide-tab" data-tab="android" data-action="click->pwa-guide#switchTab">
+            🤖 Android
+          </button>
+          <button class="pwa-guide-tab" data-tab="desktop" data-action="click->pwa-guide#switchTab">
+            💻 Desktop
+          </button>
+        </div>
+
+        <!-- iOS Instructions -->
+        <div class="pwa-guide-tab-content" data-tab-content="ios">
+          <ol class="pwa-guide-steps">
+            <li>Abra este site no <strong>Safari</strong></li>
+            <li>Toque no botão <strong>Compartilhar</strong> <span class="icon">⎋</span> (na barra inferior)</li>
+            <li>Role para baixo e toque em <strong>"Adicionar à Tela de Início"</strong></li>
+            <li>Toque em <strong>"Adicionar"</strong> no canto superior direito</li>
+            <li>Pronto! O app aparecerá na sua tela inicial</li>
+          </ol>
+        </div>
+
+        <!-- Android Instructions -->
+        <div class="pwa-guide-tab-content hidden" data-tab-content="android">
+          <ol class="pwa-guide-steps">
+            <li>Abra este site no <strong>Chrome</strong></li>
+            <li>Toque no menu <strong>⋮</strong> (três pontos no canto superior direito)</li>
+            <li>Selecione <strong>"Instalar app"</strong> ou <strong>"Adicionar à tela inicial"</strong></li>
+            <li>Confirme tocando em <strong>"Instalar"</strong></li>
+            <li>Pronto! O app aparecerá na sua tela inicial e gaveta de apps</li>
+          </ol>
+        </div>
+
+        <!-- Desktop Instructions -->
+        <div class="pwa-guide-tab-content hidden" data-tab-content="desktop">
+          <ol class="pwa-guide-steps">
+            <li>Abra este site no <strong>Chrome</strong>, <strong>Edge</strong> ou <strong>Opera</strong></li>
+            <li>Procure pelo ícone <strong>⊕</strong> ou <strong>🖥️</strong> na barra de endereço</li>
+            <li>Clique em <strong>"Instalar"</strong> ou <strong>"Instalar Survival Backpack"</strong></li>
+            <li>Confirme a instalação</li>
+            <li>O app abrirá em uma janela própria e aparecerá no menu iniciar</li>
+          </ol>
+          <div class="pwa-guide-note">
+            <strong>Dica:</strong> Você também pode usar Ctrl+Shift+A (Cmd+Shift+A no Mac) ou 
+            acessar Menu → Instalar Survival Backpack.
+          </div>
+        </div>
+      </div>
+
+      <!-- Tips Section -->
+      <div class="pwa-guide-section">
+        <h4>💡 Dicas Importantes</h4>
+        <ul class="pwa-guide-list">
+          <li><span class="icon">🔄</span> <strong>Sincronização:</strong> Quando você voltar online, todos os dados são sincronizados automaticamente</li>
+          <li><span class="icon">🔔</span> <strong>Notificações:</strong> Funcionam mesmo offline! Você receberá alertas de vencimento</li>
+          <li><span class="icon">📱</span> <strong>App Instalado:</strong> Use como um app nativo - rápido e sem navegador</li>
+          <li><span class="icon">💾</span> <strong>Cache:</strong> Navegue enquanto estiver online para cachear mais páginas</li>
+        </ul>
+      </div>
+
+      <!-- Don't Show Again -->
+      <div class="pwa-guide-footer">
+        <label class="pwa-guide-checkbox">
+          <input type="checkbox" data-pwa-guide-target="dontShowAgain">
+          Não mostrar esta mensagem novamente
+        </label>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button class="btn btn-primary" data-action="click->pwa-guide#dismiss">
+          Entendi!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

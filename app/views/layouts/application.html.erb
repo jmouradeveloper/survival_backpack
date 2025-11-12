@@ -9,6 +9,14 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="<%= pwa_manifest_path %>">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Survival Backpack">
+    <link rel="apple-touch-icon" href="/icon.png">
+
     <%= yield :head %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
@@ -34,7 +42,9 @@
     </script>
   </head>
 
-  <body data-controller="notifications">
+  <body data-controller="notifications pwa-guide">
+    <%= render "shared/pwa_guide_modal" %>
+    
     <header class="main-header">
       <div class="container">
         <h1>🎒 Survival Backpack</h1>

@@ -230,7 +230,8 @@ O projeto possui documentação detalhada na pasta `docs/`:
 ### Guias Práticos
 - ⚡ **[FIFO_QUICKSTART.md](docs/FIFO_QUICKSTART.md)** - Início rápido com FIFO
 - 🔔 **[NOTIFICATIONS_QUICKSTART.md](docs/NOTIFICATIONS_QUICKSTART.md)** - Configurar notificações
-- 🔌 **[OFFLINE_TESTING_GUIDE.md](docs/OFFLINE_TESTING_GUIDE.md)** - Testar funcionalidades offline
+- 🔌 **[OFFLINE_TESTING_GUIDE.md](docs/OFFLINE_TESTING_GUIDE.md)** - Testar funcionalidades offline (Desenvolvedores)
+- 📱 **[USER_INSTALLATION_GUIDE.md](docs/USER_INSTALLATION_GUIDE.md)** - Guia de instalação para usuários finais
 - 🐳 **[DOCKER_DEVELOPMENT.md](docs/DOCKER_DEVELOPMENT.md)** - Desenvolvimento com Docker
 
 ### Guias de Implementação

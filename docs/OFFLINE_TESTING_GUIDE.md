@@ -296,6 +296,236 @@ Offline - Resource not available (para recursos não cacheados)
 
 ---
 
+## 📱 Teste de Instalação PWA
+
+### Passo 1: Validar Manifest
+
+1. Abra DevTools → **Application** → **Manifest**
+2. Verifique se o manifest está carregado corretamente:
+   ```
+   ✅ Name: Survival Backpack - Gerenciamento de Estoque
+   ✅ Short name: Survival Backpack
+   ✅ Start URL: /
+   ✅ Display: standalone
+   ✅ Icons: 192x192, 512x512 (any e maskable)
+   ✅ Theme color: #2563eb
+   ✅ Background color: #f8fafc
+   ```
+3. Clique em cada ícone para verificar se carrega
+
+### Passo 2: Verificar Installability
+
+No Chrome DevTools → **Application** → **Manifest**, procure por:
+
+```
+✅ "Installability" - deve mostrar "Installable"
+```
+
+Se não estiver instalável, verifique:
+- [ ] Service Worker está registrado e ativo
+- [ ] Manifest está presente e válido
+- [ ] Site está sendo servido via HTTPS ou localhost
+- [ ] Ícones estão acessíveis
+- [ ] Start URL está acessível
+
+### Passo 3: Testar Instalação no iOS (Safari)
+
+**Device:** iPhone ou iPad  
+**Browser:** Safari (OBRIGATÓRIO)
+
+1. Acesse o site no Safari
+2. Toque no botão **Compartilhar** ⎋ (barra inferior)
+3. Role e toque em **"Adicionar à Tela de Início"**
+4. Edite o nome se desejar
+5. Toque em **"Adicionar"**
+6. ✅ Verifique se o ícone apareceu na tela inicial
+7. ✅ Abra o app pelo ícone
+8. ✅ Deve abrir em tela cheia (sem barra do Safari)
+9. ✅ Teste navegação e funcionalidade offline
+
+**Notas iOS:**
+- Service Workers funcionam no iOS 11.3+
+- PWA só funciona no Safari (não Chrome/Firefox)
+- Não aparece na App Library ou busca do sistema
+- Cache é limitado (alguns MB)
+
+### Passo 4: Testar Instalação no Android (Chrome)
+
+**Device:** Smartphone ou tablet Android  
+**Browser:** Chrome (recomendado) ou Edge
+
+1. Acesse o site no Chrome
+2. Deve aparecer banner: **"Adicionar Survival Backpack à tela inicial"**
+   - Se não aparecer, use o menu ⋮ → **"Instalar app"**
+3. Toque em **"Instalar"** ou **"Adicionar"**
+4. ✅ Ícone aparece na tela inicial
+5. ✅ Ícone aparece na gaveta de apps
+6. ✅ Abra o app pelo ícone
+7. ✅ Deve abrir em tela cheia (modo standalone)
+8. ✅ Aparece na lista de apps instalados (Configurações → Apps)
+9. ✅ Teste navegação e funcionalidade offline
+
+**Notas Android:**
+- Melhor suporte a PWA
+- App aparece como instalado no sistema
+- Pode receber push notifications mesmo fechado
+- Cache mais generoso
+
+### Passo 5: Testar Instalação no Desktop
+
+**Browsers suportados:**
+- ✅ Chrome 73+ (Windows, Mac, Linux, ChromeOS)
+- ✅ Edge 79+ (Windows, Mac)
+- ✅ Opera 60+
+- ❌ Safari (Mac) - não suporta instalação
+- ❌ Firefox - não suporta instalação (ainda)
+
+**Instalação no Chrome/Edge:**
+
+1. Acesse o site
+2. Procure o ícone de instalação na barra de endereço:
+   - Chrome: **⊕** ou **🖥️** (canto direito)
+   - Edge: **⊕** (canto direito)
+3. Clique no ícone
+4. Clique em **"Instalar"** ou **"Instalar Survival Backpack"**
+5. ✅ App abre em janela própria
+6. ✅ Aparece no menu iniciar
+7. ✅ Aparece na lista de aplicativos
+8. ✅ Pode ser fixado na barra de tarefas
+
+**Método alternativo:**
+- Menu ⋮ → **"Instalar Survival Backpack"**
+- Atalho: Ctrl+Shift+A (Cmd+Shift+A no Mac)
+
+**Teste funcionalidades:**
+- ✅ Janela própria (sem barra de URL)
+- ✅ Ícone personalizado
+- ✅ Funciona offline após cache
+- ✅ Notificações desktop
+
+---
+
+## 🔍 Validação de Service Worker
+
+### Verificar Registro
+
+**DevTools → Application → Service Workers**
+
+Verifique:
+```
+✅ Status: activated and is running
+✅ Source: /service-worker
+✅ Updated: (timestamp recente)
+```
+
+### Verificar Cache
+
+**DevTools → Application → Cache Storage**
+
+Você deve ver:
+```
+survival-backpack-v2
+├── /icon.png
+├── /icon.svg
+├── / (root)
+├── /food_items (se visitado)
+├── /assets/application.css
+└── /assets/application.js
+```
+
+### Testar Atualização de Service Worker
+
+1. Edite `app/views/pwa/service-worker.js`
+2. Mude `CACHE_NAME` de `v2` para `v3`
+3. Recarregue a página
+4. DevTools deve mostrar:
+   ```
+   🔄 "waiting to activate"
+   ```
+5. Clique em **"skipWaiting"** ou recarregue novamente
+6. ✅ Novo service worker ativado
+7. ✅ Cache antigo deletado
+
+### Inspecionar Requisições
+
+**DevTools → Network**
+
+Com service worker ativo, você verá:
+- ⚙️ Ícone de engrenagem nas requisições servidas pelo SW
+- Cache hits aparecem instantâneos (0ms)
+
+---
+
+## ✅ Checklist Completo de Testes PWA
+
+### Configuração Básica
+- [ ] Manifest acessível em `/manifest`
+- [ ] Service Worker acessível em `/service-worker`
+- [ ] Service Worker registrado com sucesso
+- [ ] Meta tags PWA presentes no HTML (`<head>`)
+- [ ] Ícones (192x192 e 512x512) acessíveis
+- [ ] Theme color configurado
+
+### Installability
+- [ ] App aparece como "Installable" no DevTools
+- [ ] Banner de instalação aparece (Android Chrome)
+- [ ] Ícone de instalação aparece (Desktop Chrome/Edge)
+- [ ] "Adicionar à Tela de Início" funciona (iOS Safari)
+
+### Instalação iOS
+- [ ] Instala via Safari → Compartilhar → Adicionar à Tela de Início
+- [ ] Ícone aparece na tela inicial
+- [ ] Abre em tela cheia (sem barra do Safari)
+- [ ] Splash screen aparece (com theme color)
+- [ ] Funciona offline após cache
+
+### Instalação Android
+- [ ] Banner de instalação aparece automaticamente
+- [ ] Instala via Chrome → Menu → Instalar app
+- [ ] Ícone aparece na tela inicial
+- [ ] Ícone aparece na gaveta de apps
+- [ ] Aparece como app instalado no sistema
+- [ ] Abre em tela cheia (modo standalone)
+- [ ] Splash screen aparece
+- [ ] Funciona offline após cache
+
+### Instalação Desktop
+- [ ] Ícone de instalação aparece na barra de endereço
+- [ ] Instala via ícone ou Menu → Instalar
+- [ ] Abre em janela própria
+- [ ] Aparece no menu iniciar / dock
+- [ ] Pode ser fixado na barra de tarefas
+- [ ] Funciona offline após cache
+
+### Funcionalidade Offline
+- [ ] Páginas já visitadas carregam offline
+- [ ] Assets (CSS, JS) funcionam offline
+- [ ] Navegação entre páginas cacheadas funciona
+- [ ] Mensagem apropriada para páginas não cacheadas
+- [ ] Service Worker intercepta requisições corretamente
+
+### Modal de Guia PWA
+- [ ] Modal aparece automaticamente após SW ativo (primeira vez)
+- [ ] Modal não aparece se usuário já viu (localStorage)
+- [ ] Botão "Ver Guia de Instalação" funciona (Configurações)
+- [ ] Abas (iOS/Android/Desktop) funcionam
+- [ ] Checkbox "Não mostrar novamente" funciona
+- [ ] Modal fecha corretamente
+
+### Push Notifications
+- [ ] Permissão de notificação pode ser solicitada
+- [ ] Push subscription funciona
+- [ ] Notificações aparecem mesmo com app fechado
+- [ ] Clicar em notificação abre o app
+- [ ] Notificações funcionam offline (após configuradas)
+
+### Sincronização
+- [ ] Cache atualiza quando volta online
+- [ ] Dados sincronizam automaticamente
+- [ ] Background sync funciona (se suportado)
+
+---
+
 ## 🚀 Melhorias Futuras
 
 Para tornar a aplicação **totalmente funcional offline**, seria necessário:
@@ -312,9 +542,10 @@ Para tornar a aplicação **totalmente funcional offline**, seria necessário:
    - Cache de API responses
    - Estratégias de atualização
 
-4. **PWA Completo**
-   - Manifest.json configurado
-   - Instalável como app
+4. **PWA Completo** ✅ **IMPLEMENTADO**
+   - Manifest.json configurado ✅
+   - Instalável como app ✅
+   - Modal de guia para usuários ✅
 
 ---
 
@@ -325,10 +556,11 @@ Se encontrar problemas:
 2. Limpe o cache e cookies
 3. Teste em modo anônimo
 4. Verifique se o Service Worker está ativo
+5. Use o checklist acima para diagnóstico
 
 ---
 
-**Versão:** 1.0  
+**Versão:** 2.0  
 **Data:** Novembro 2025  
 **Aplicação:** Survival Backpack
 

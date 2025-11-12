@@ -1,10 +1,19 @@
 {
-  "name": "SurvivalBackpack",
+  "name": "Survival Backpack - Gerenciamento de Suprimentos",
+  "short_name": "Survival Backpack",
+  "description": "Sistema inteligente de gerenciamento de alimentos com controle de validade, rotação FIFO e notificações. Funciona offline.",
   "icons": [
     {
       "src": "/icon.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
     },
     {
       "src": "/icon.png",
@@ -16,7 +25,25 @@
   "start_url": "/",
   "display": "standalone",
   "scope": "/",
-  "description": "SurvivalBackpack.",
-  "theme_color": "red",
-  "background_color": "red"
+  "orientation": "portrait-primary",
+  "theme_color": "#2563eb",
+  "background_color": "#f8fafc",
+  "categories": ["productivity", "food", "lifestyle"],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Ver Alimentos",
+      "short_name": "Alimentos",
+      "description": "Ver lista de alimentos",
+      "url": "/food_items",
+      "icons": [{ "src": "/icon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Notificações",
+      "short_name": "Notificações",
+      "description": "Ver notificações de vencimento",
+      "url": "/notifications",
+      "icons": [{ "src": "/icon.png", "sizes": "192x192" }]
+    }
+  ]
 }

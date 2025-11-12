@@ -550,6 +550,170 @@ main {
 }
 
 /* Responsive */
+/* PWA Guide Modal Specific Styles */
+.pwa-guide-modal {
+  max-width: 700px;
+}
+
+.pwa-guide-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.pwa-guide-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 1rem;
+}
+
+.pwa-guide-section h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.pwa-guide-section p {
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.pwa-guide-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.pwa-guide-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background-color: var(--bg-color);
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.pwa-guide-list li:hover {
+  background-color: #e8f0fe;
+}
+
+.pwa-guide-list .icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.pwa-guide-note {
+  background-color: #fff9e6;
+  border-left: 4px solid var(--warning-color);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #856404;
+}
+
+.pwa-guide-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.pwa-guide-tab {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-muted);
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.pwa-guide-tab:hover {
+  color: var(--primary-color);
+  background-color: var(--bg-color);
+}
+
+.pwa-guide-tab.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+  font-weight: 600;
+}
+
+.pwa-guide-tab-content {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.pwa-guide-steps {
+  list-style: none;
+  counter-reset: step-counter;
+  padding: 0;
+  margin: 0;
+}
+
+.pwa-guide-steps li {
+  counter-increment: step-counter;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background-color: var(--bg-color);
+  border-radius: 0.5rem;
+  position: relative;
+}
+
+.pwa-guide-steps li::before {
+  content: counter(step-counter);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.pwa-guide-steps li strong {
+  color: var(--text-color);
+}
+
+.pwa-guide-footer {
+  background-color: var(--bg-color);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.pwa-guide-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.pwa-guide-checkbox input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.hidden {
+  display: none !important;
+}
+
 @media (max-width: 768px) {
   .page-header {
     flex-direction: column;
@@ -567,5 +731,24 @@ main {
 
   .modal-content {
     width: 95%;
+  }
+
+  .pwa-guide-modal {
+    max-width: 95%;
+    max-height: 95vh;
+  }
+
+  .pwa-guide-tabs {
+    flex-direction: column;
+  }
+
+  .pwa-guide-tab {
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+  }
+
+  .pwa-guide-tab.active {
+    border-left: 4px solid var(--primary-color);
+    background-color: var(--bg-color);
   }
 }
