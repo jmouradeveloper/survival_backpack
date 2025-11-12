@@ -1,4 +1,5 @@
 class NotificationPreferencesController < ApplicationController
+  include Authorization
   before_action :set_preference
 
   # GET /notification_preferences
@@ -56,10 +57,10 @@ class NotificationPreferencesController < ApplicationController
   # POST /notification_preferences/test_notification
   def test_notification
     # Criar uma notificação de teste
-    food_item = FoodItem.first
+    food_item = current_user.food_items.first
     
     if food_item
-      notification = Notification.create!(
+      notification = current_user.notifications.create!(
         food_item: food_item,
         title: "🧪 Notificação de Teste",
         body: "Esta é uma notificação de teste do sistema de alertas.",
@@ -84,7 +85,7 @@ class NotificationPreferencesController < ApplicationController
   private
 
   def set_preference
-    @preference = NotificationPreference.current
+    @preference = NotificationPreference.for_user(current_user)
   end
 
   def preference_params

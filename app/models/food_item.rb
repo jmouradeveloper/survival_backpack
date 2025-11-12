@@ -1,10 +1,12 @@
 class FoodItem < ApplicationRecord
   # Associações
+  belongs_to :user
   has_many :notifications, dependent: :destroy
   has_many :supply_batches, dependent: :destroy
   has_many :supply_rotations, dependent: :destroy
 
   # Validações
+  validates :user_id, presence: true
   validates :name, presence: true, length: { minimum: 2, maximum: 255 }
   validates :category, presence: true
   validates :quantity, presence: true, numericality: { greater_than_or_equal_to: 0 }

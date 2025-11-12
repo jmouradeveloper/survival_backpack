@@ -3,7 +3,7 @@ module Api
     class BackupsController < BaseController
       # GET /api/v1/backups/export
       def export
-        service = BackupExportService.new
+        service = BackupExportService.new(current_user)
         
         if params[:export_format] == "csv"
           csv_data = service.export_to_csv
@@ -25,7 +25,7 @@ module Api
         end
         
         strategy = params[:strategy]&.to_sym || :merge
-        service = BackupImportService.new
+        service = BackupImportService.new(current_user)
         
         result = service.import_from_json(params[:data], strategy: strategy)
         

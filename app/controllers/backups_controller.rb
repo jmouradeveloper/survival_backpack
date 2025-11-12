@@ -1,4 +1,6 @@
 class BackupsController < ApplicationController
+  include Authorization
+  
   # GET /backups
   def index
     # Interface principal de backup
@@ -11,7 +13,7 @@ class BackupsController < ApplicationController
   
   # GET /backups/export
   def export
-    service = BackupExportService.new
+    service = BackupExportService.new(current_user)
     
     respond_to do |format|
       format.json do
@@ -61,7 +63,7 @@ class BackupsController < ApplicationController
       return
     end
     
-    service = BackupImportService.new
+    service = BackupImportService.new(current_user)
     
     result = if file_type == "json"
       service.import_from_json(file_content, strategy: strategy)

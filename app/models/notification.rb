@@ -1,7 +1,9 @@
 class Notification < ApplicationRecord
+  belongs_to :user
   belongs_to :food_item
 
   # Validações
+  validates :user_id, presence: true
   validates :title, presence: true
   validates :notification_type, presence: true
   validates :read, inclusion: { in: [true, false] }

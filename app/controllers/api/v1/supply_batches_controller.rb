@@ -5,7 +5,7 @@ module Api
       
       # GET /api/v1/supply_batches
       def index
-        @supply_batches = SupplyBatch.includes(:food_item)
+        @supply_batches = current_user.supply_batches.includes(:food_item)
         
         # Filtros
         @supply_batches = @supply_batches.by_food_item(params[:food_item_id]) if params[:food_item_id].present?
@@ -48,7 +48,7 @@ module Api
       
       # POST /api/v1/supply_batches
       def create
-        @supply_batch = SupplyBatch.new(supply_batch_params)
+        @supply_batch = current_user.supply_batches.new(supply_batch_params)
         
         if @supply_batch.save
           render json: @supply_batch, status: :created
@@ -139,7 +139,7 @@ module Api
       private
       
       def set_supply_batch
-        @supply_batch = SupplyBatch.find(params[:id])
+        @supply_batch = current_user.supply_batches.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         render json: { error: 'Supply batch not found' }, status: :not_found
       end

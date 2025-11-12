@@ -1,5 +1,9 @@
 class NotificationPreference < ApplicationRecord
+  # Associações
+  belongs_to :user
+  
   # Validações
+  validates :user_id, presence: true, uniqueness: true
   validates :days_before_expiration, presence: true, numericality: { 
     only_integer: true, 
     greater_than_or_equal_to: 1, 
@@ -9,14 +13,14 @@ class NotificationPreference < ApplicationRecord
   # Callbacks
   after_initialize :set_defaults, if: :new_record?
 
-  # Singleton pattern - apenas uma preferência por sistema
-  # Em uma aplicação multi-usuário, você adicionaria um belongs_to :user
-  def self.current
-    first_or_create!
+  # Agora cada usuário tem suas próprias preferências
+  def self.for_user(user)
+    find_or_create_by!(user: user)
   end
 
   def self.days_before_expiration_value
-    current.days_before_expiration
+    # Valor padrão caso não exista preferência
+    7
   end
 
   # Métodos para gerenciar subscription de push

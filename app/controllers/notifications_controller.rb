@@ -1,10 +1,11 @@
 class NotificationsController < ApplicationController
+  include Authorization
   before_action :set_notification, only: [:show, :mark_as_read, :destroy]
 
   # GET /notifications
   def index
-    @notifications = Notification.includes(:food_item).recent.limit(50)
-    @unread_count = Notification.unread.count
+    @notifications = current_user.notifications.includes(:food_item).recent.limit(50)
+    @unread_count = current_user.notifications.unread.count
 
     respond_to do |format|
       format.html
@@ -37,7 +38,7 @@ class NotificationsController < ApplicationController
 
   # POST /notifications/mark_all_as_read
   def mark_all_as_read
-    Notification.unread.update_all(read: true)
+    current_user.notifications.unread.update_all(read: true)
 
     respond_to do |format|
       format.html { redirect_to notifications_path, notice: "Todas as notificações foram marcadas como lidas." }
@@ -63,14 +64,14 @@ class NotificationsController < ApplicationController
 
   # GET /notifications/unread_count
   def unread_count
-    count = Notification.unread.count
+    count = current_user.notifications.unread.count
     render json: { count: count }
   end
 
   private
 
   def set_notification
-    @notification = Notification.find(params[:id])
+    @notification = current_user.notifications.find(params[:id])
   end
 end
 

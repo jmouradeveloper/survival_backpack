@@ -1,10 +1,11 @@
 class SupplyBatchesController < ApplicationController
-  before_action :set_supply_batch, only: [:show, :edit, :update, :destroy]
+  include Authorization
+  before_action :set_supply_batch, only: [:show, :edit, :update, :destroy, :consume]
   before_action :set_food_items, only: [:new, :edit, :create, :update]
   
   # GET /supply_batches
   def index
-    @supply_batches = SupplyBatch.includes(:food_item)
+    @supply_batches = current_user.supply_batches.includes(:food_item)
     
     # Filtros
     @supply_batches = @supply_batches.by_food_item(params[:food_item_id]) if params[:food_item_id].present?
@@ -37,13 +38,13 @@ class SupplyBatchesController < ApplicationController
   
   # GET /supply_batches/new
   def new
-    @supply_batch = SupplyBatch.new
+    @supply_batch = current_user.supply_batches.new
     @supply_batch.entry_date = Date.today
     
     # Se vier de um food_item específico, pré-preenche
     if params[:food_item_id].present?
       @supply_batch.food_item_id = params[:food_item_id]
-      @food_item = FoodItem.find(params[:food_item_id])
+      @food_item = current_user.food_items.find(params[:food_item_id])
     end
     
     respond_to do |format|
@@ -62,7 +63,7 @@ class SupplyBatchesController < ApplicationController
   
   # POST /supply_batches
   def create
-    @supply_batch = SupplyBatch.new(supply_batch_params)
+    @supply_batch = current_user.supply_batches.new(supply_batch_params)
     
     respond_to do |format|
       if @supply_batch.save
@@ -127,8 +128,8 @@ class SupplyBatchesController < ApplicationController
   
   # GET /supply_batches/fifo_order
   def fifo_order
-    @food_item = params[:food_item_id].present? ? FoodItem.find(params[:food_item_id]) : nil
-    @supply_batches = SupplyBatch.active
+    @food_item = params[:food_item_id].present? ? current_user.food_items.find(params[:food_item_id]) : nil
+    @supply_batches = current_user.supply_batches.active
     @supply_batches = @supply_batches.by_food_item(@food_item.id) if @food_item
     @supply_batches = @supply_batches.by_fifo_order
     
@@ -140,7 +141,6 @@ class SupplyBatchesController < ApplicationController
   
   # POST /supply_batches/:id/consume
   def consume
-    @supply_batch = SupplyBatch.find(params[:id])
     quantity = params[:quantity].to_f
     rotation_type = params[:rotation_type] || 'consumption'
     reason = params[:reason]
@@ -183,11 +183,11 @@ class SupplyBatchesController < ApplicationController
   private
   
   def set_supply_batch
-    @supply_batch = SupplyBatch.find(params[:id])
+    @supply_batch = current_user.supply_batches.find(params[:id])
   end
   
   def set_food_items
-    @food_items = FoodItem.order(:name)
+    @food_items = current_user.food_items.order(:name)
   end
   
   def supply_batch_params

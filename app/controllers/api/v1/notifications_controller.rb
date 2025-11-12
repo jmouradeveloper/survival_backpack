@@ -5,7 +5,7 @@ module Api
 
       # GET /api/v1/notifications
       def index
-        @notifications = Notification.includes(:food_item).recent
+        @notifications = current_user.notifications.includes(:food_item).recent
         
         # Filtros opcionais
         @notifications = @notifications.unread if params[:unread] == 'true'
@@ -23,8 +23,8 @@ module Api
           meta: {
             page: page,
             per_page: per_page,
-            total: Notification.count,
-            unread_count: Notification.unread.count
+            total: current_user.notifications.count,
+            unread_count: current_user.notifications.unread.count
           }
         }
       end
@@ -43,7 +43,7 @@ module Api
 
       # POST /api/v1/notifications/mark_all_as_read
       def mark_all_as_read
-        Notification.unread.update_all(read: true)
+        current_user.notifications.unread.update_all(read: true)
         render json: { message: "All notifications marked as read" }
       end
 
@@ -55,14 +55,14 @@ module Api
 
       # GET /api/v1/notifications/unread_count
       def unread_count
-        count = Notification.unread.count
+        count = current_user.notifications.unread.count
         render json: { count: count }
       end
 
       private
 
       def set_notification
-        @notification = Notification.find(params[:id])
+        @notification = current_user.notifications.find(params[:id])
       end
     end
   end

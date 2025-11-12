@@ -1,9 +1,11 @@
 class SupplyRotation < ApplicationRecord
   # Associações
+  belongs_to :user
   belongs_to :supply_batch
   belongs_to :food_item
   
   # Validações
+  validates :user_id, presence: true
   validates :quantity, presence: true, numericality: { greater_than: 0 }
   validates :rotation_date, presence: true
   validates :rotation_type, presence: true, inclusion: { in: %w[consumption waste donation transfer] }

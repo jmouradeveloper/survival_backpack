@@ -43,7 +43,7 @@ module Api
       private
 
       def set_preference
-        @preference = NotificationPreference.current
+        @preference = NotificationPreference.for_user(current_user)
       end
 
       def preference_params

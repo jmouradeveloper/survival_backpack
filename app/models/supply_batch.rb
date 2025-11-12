@@ -1,9 +1,11 @@
 class SupplyBatch < ApplicationRecord
   # Associações
+  belongs_to :user
   belongs_to :food_item
   has_many :supply_rotations, dependent: :destroy
   
   # Validações
+  validates :user_id, presence: true
   validates :initial_quantity, presence: true, numericality: { greater_than: 0 }
   validates :current_quantity, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :entry_date, presence: true
@@ -111,6 +113,7 @@ class SupplyBatch < ApplicationRecord
     transaction do
       # Cria registro de rotação
       rotation = supply_rotations.create!(
+        user: user,
         food_item: food_item,
         quantity: quantity,
         rotation_date: Date.today,

@@ -5,7 +5,7 @@ module Api
       
       # GET /api/v1/supply_rotations
       def index
-        @supply_rotations = SupplyRotation.includes(:food_item, :supply_batch)
+        @supply_rotations = current_user.supply_rotations.includes(:food_item, :supply_batch)
         
         # Filtros
         @supply_rotations = @supply_rotations.by_food_item(params[:food_item_id]) if params[:food_item_id].present?
@@ -42,7 +42,7 @@ module Api
       
       # POST /api/v1/supply_rotations
       def create
-        supply_batch = SupplyBatch.find(rotation_params[:supply_batch_id])
+        supply_batch = current_user.supply_batches.find(rotation_params[:supply_batch_id])
         quantity = rotation_params[:quantity].to_f
         
         begin
@@ -67,7 +67,7 @@ module Api
       
       # POST /api/v1/supply_rotations/consume_fifo
       def consume_fifo
-        food_item = FoodItem.find(params[:food_item_id])
+        food_item = current_user.food_items.find(params[:food_item_id])
         quantity = params[:quantity].to_f
         rotation_type = params[:rotation_type] || 'consumption'
         reason = params[:reason]
@@ -103,8 +103,8 @@ module Api
         
         # Se tiver food_item_id, adiciona estatísticas específicas
         if params[:food_item_id].present?
-          food_item = FoodItem.find(params[:food_item_id])
-          rotations = SupplyRotation.by_food_item(food_item.id)
+          food_item = current_user.food_items.find(params[:food_item_id])
+          rotations = current_user.supply_rotations.by_food_item(food_item.id)
           rotations = rotations.by_date_range(start_date, end_date) if start_date && end_date
           
           stats[:food_item] = {
@@ -123,7 +123,7 @@ module Api
       private
       
       def set_supply_rotation
-        @supply_rotation = SupplyRotation.find(params[:id])
+        @supply_rotation = current_user.supply_rotations.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         render json: { error: 'Supply rotation not found' }, status: :not_found
       end

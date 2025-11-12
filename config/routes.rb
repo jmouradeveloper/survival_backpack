@@ -9,6 +9,18 @@ Rails.application.routes.draw do
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  # Authentication routes
+  get "login", to: "sessions#new", as: :login
+  post "login", to: "sessions#create"
+  delete "logout", to: "sessions#destroy", as: :logout
+  
+  # Registration routes
+  get "signup", to: "registrations#new", as: :signup
+  post "signup", to: "registrations#create"
+  
+  # API Token management
+  resources :api_tokens, only: [:index, :create, :destroy]
+
   # Rotas Web - Gerenciamento de Alimentos
   resources :food_items
   
@@ -58,6 +70,11 @@ Rails.application.routes.draw do
   # API Routes
   namespace :api do
     namespace :v1 do
+      # API Authentication
+      post "login", to: "sessions#create"
+      delete "logout", to: "sessions#destroy"
+      resources :api_tokens, only: [:index, :create, :destroy]
+      
       resources :food_items do
         collection do
           get :statistics

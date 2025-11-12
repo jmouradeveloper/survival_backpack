@@ -1,15 +1,16 @@
 class FoodItemsController < ApplicationController
+  include Authorization
   before_action :set_food_item, only: [:show, :edit, :update, :destroy]
 
   # GET /food_items
   def index
-    @food_items = FoodItem.recent
+    @food_items = current_user.food_items.recent
     
     # Buscar categorias únicas para o filtro
-    @categories = FoodItem.distinct.pluck(:category).compact.sort
+    @categories = current_user.food_items.distinct.pluck(:category).compact.sort
     
     # Buscar locais únicos para o filtro
-    @storage_locations = FoodItem.distinct.pluck(:storage_location).compact.reject(&:blank?).sort
+    @storage_locations = current_user.food_items.distinct.pluck(:storage_location).compact.reject(&:blank?).sort
     
     # Filtros opcionais
     @food_items = @food_items.by_category(params[:category]) if params[:category].present?
@@ -40,7 +41,7 @@ class FoodItemsController < ApplicationController
 
   # GET /food_items/new
   def new
-    @food_item = FoodItem.new
+    @food_item = current_user.food_items.new
   end
 
   # GET /food_items/:id/edit
@@ -49,7 +50,7 @@ class FoodItemsController < ApplicationController
 
   # POST /food_items
   def create
-    @food_item = FoodItem.new(food_item_params)
+    @food_item = current_user.food_items.new(food_item_params)
 
     respond_to do |format|
       if @food_item.save
@@ -94,7 +95,7 @@ class FoodItemsController < ApplicationController
   private
 
   def set_food_item
-    @food_item = FoodItem.find(params[:id])
+    @food_item = current_user.food_items.find(params[:id])
   end
 
   def food_item_params

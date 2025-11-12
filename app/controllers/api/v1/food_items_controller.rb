@@ -5,7 +5,7 @@ module Api
 
       # GET /api/v1/food_items
       def index
-        @food_items = FoodItem.recent
+        @food_items = current_user.food_items.recent
 
         # Filtros opcionais
         @food_items = @food_items.by_category(params[:category]) if params[:category].present?
@@ -32,7 +32,7 @@ module Api
           meta: {
             page: page,
             per_page: per_page,
-            total: FoodItem.count
+            total: current_user.food_items.count
           }
         }
       end
@@ -44,7 +44,7 @@ module Api
 
       # POST /api/v1/food_items
       def create
-        @food_item = FoodItem.new(food_item_params)
+        @food_item = current_user.food_items.new(food_item_params)
 
         if @food_item.save
           render json: { 
@@ -97,7 +97,7 @@ module Api
       private
 
       def set_food_item
-        @food_item = FoodItem.find(params[:id])
+        @food_item = current_user.food_items.find(params[:id])
       end
 
       def food_item_params
